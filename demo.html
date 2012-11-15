@@ -1,0 +1,23 @@
+<html>
+	<head>
+		<script type="text/javascript" src="lib/microevent/microevent.js"></script>
+		<script type="text/javascript" src="core/core.js"></script>
+		<script type="text/javascript" src="lib/knockout/knockout-2.2.0.js"></script>
+		<script type="text/javascript" src="lib/jquery/jquery-1.8.2.min.js"></script>
+		<script type="text/javascript" src="ui/ui.js"></script>
+		
+	</head>
+	<body>
+		<span data-bind="text: test"></span>
+		<button data-bind="click: sheet.addItem">Add Item</button>
+		<div id="sheetArea" style="height:600px; width:900px; border-color:black; border-width:1px;" data-bind="foreach: sheet.items">
+			<div>
+				<span data-bind="text:value"></span>
+			</div>
+		</div>
+	</body>
+
+	<script type="text/javascript">
+		
+	</script>
+</html>
