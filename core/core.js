@@ -16,7 +16,7 @@ var Sheet = (function (){
 })();
 
 
-var SimpleValueSource = (function(){
+var SingleValueSource = (function(){
 	var value = null;
 
 	var constructor = function (){

@@ -1,9 +1,9 @@
-var SimpleValueViewModel = (function(){
+var SingleValueViewModel = (function(){
 	var valueObject;
 
-	return function(simpleValue){
+	return function(singleValueSource){
 		var self = this;
-		valueObject = simpleValue;
+		valueObject = singleValueSource;
 
 		valueObject.bind('valueChanged', function(newValue){
 			self.value(newValue);
@@ -24,12 +24,12 @@ var SheetVM = (function(){
 
 		sheet = new Sheet();
 		sheet.bind('itemAdded', function(newItem){
-			self.items.push(new SimpleValueViewModel(newItem));
+			self.items.push(new SingleValueViewModel(newItem));
 		});
 
 
 		self.addItem = function(){
-			var svs = new SimpleValueSource();
+			var svs = new SingleValueSource();
 			svs.Value(3);
 			sheet.addItem(svs);
 		};
