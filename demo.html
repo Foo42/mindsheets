@@ -10,9 +10,9 @@
 	<body>
 		<span data-bind="text: test"></span>
 		<button data-bind="click: sheet.addItem">Add Item</button>
-		<div id="sheetArea" style="height:600px; width:900px; border-color:black; border-width:1px;" data-bind="foreach: sheet.items">
-			<div>
-				<span data-bind="text:value"></span>
+		<div id="sheetArea" style="height:600px; width:900px; border-color:black; border-width:1px;" data-bind="foreach: sheet.items, click:sheet.clicked">
+			<div style="position:absolute;" data-bind="style: {left:position().x, top:position().y}">
+				<span data-bind="text:value, click:clicked"></span>
 			</div>
 		</div>
 	</body>

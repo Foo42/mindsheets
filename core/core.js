@@ -1,4 +1,12 @@
 
+var SheetObject = (function(){
+	return function(item, position){
+		var self = this;
+		self.item = item;
+		self.position = position;
+	}
+})();
+
 var Sheet = (function (){
 	var items = [];
 
