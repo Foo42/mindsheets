@@ -18,8 +18,30 @@ var SingleValueViewModel = (function(){
 		//this is currently a one way initialisation from the model object
 		self.value = ko.observable(valueObject.Value());
 
+		self.isEditing = ko.observable(true);
+
 		self.clicked = function(data, event){
 			event.stopPropagation();
+			self.isEditing(!self.isEditing());
+		};
+
+		self.stopEditing = function(data, event){
+			event.stopPropagation();
+			self.isEditing(false);
+		};
+
+		self.startEditing = function(data, event){
+			event.stopPropagation();
+			self.isEditing(true);
+		};
+
+		self.keypressed = function(data, event){
+			if(event.keyCode == 13)
+			{
+				event.stopPropagation();
+				self.isEditing(false);
+			}
+			return true;
 		};
 
 	};
@@ -42,7 +64,7 @@ var SheetVM = (function(){
 
 		self.addItemAtPosition = function(position){
 			var svs = new SingleValueSource();
-			svs.Value(3);
+			svs.Value();
 			var item = new SheetObject(svs, position);
 			
 			sheet.addItem(item);
