@@ -20,18 +20,7 @@ var SingleValueViewModel = (function(){
 
 		self.isEditing = ko.observable(true);
 
-		self.clicked = function(data, event){
-			event.stopPropagation();
-			self.isEditing(!self.isEditing());
-		};
-
-		self.stopEditing = function(data, event){
-			event.stopPropagation();
-			self.isEditing(false);
-		};
-
 		self.startEditing = function(data, event){
-			event.stopPropagation();
 			self.isEditing(true);
 		};
 
@@ -71,6 +60,10 @@ var SheetVM = (function(){
 		};
 
 		self.clicked = function(data, event){
+			var vmForClickTarget = ko.dataFor(event.target);
+			if(vmForClickTarget.sheet != self)
+				return; //We are only interested in clicks directly on sheet, not events bubbling up
+
 			var pos = {x:event.pageX + "px", y:event.pageY + "px"};
 			self.addItemAtPosition(pos);
 		}
