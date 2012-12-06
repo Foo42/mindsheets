@@ -13,7 +13,7 @@
 		<div id="sheetArea" style="height:600px; width:900px; border-color:black; border-width:1px;" data-bind="foreach: sheet.items, click:sheet.clicked">
 			<div style="position:absolute;" data-bind="style: {left:position().x, top:position().y}">
 				<span data-bind="visible:isEditing()!=true, text:value, click:startEditing"></span>
-				<input autofocus="autofocus" data-bind="visible:isEditing, value:value, valueUpdate:'afterkeydown', click:stopEditing, submit:stopEditing, event: { keypress: keypressed}"></input>
+				<input autofocus="autofocus" data-bind="visible:isEditing, value:value, hasfocus:isEditing, valueUpdate:'afterkeydown', clickBubble: false, submit:stopEditing, event: { keypress: keypressed}"></input>
 			</div>
 		</div>
 	</body>
