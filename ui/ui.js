@@ -82,6 +82,4 @@ var RootViewModel = (function(){
 })();
 
 
-$(document).ready(function(){
-	ko.applyBindings(new RootViewModel());	
-})
+

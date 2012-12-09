@@ -1,6 +1,7 @@
 <html>
 	<head>
 		<link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<link href="ui/style/style.css" rel="stylesheet">
 		<script type="text/javascript" src="lib/microevent/microevent.js"></script>
 		<script type="text/javascript" src="core/core.js"></script>
 		<script type="text/javascript" src="lib/knockout/knockout-2.2.0.js"></script>
@@ -10,7 +11,7 @@
 	</head>
 	<body>
 		<div id="sheetArea" style="height:600px; width:900px; border-color:black; border-width:1px;" data-bind="foreach: sheet.items, click:sheet.clicked">
-			<div style="position:absolute;" data-bind="style: {left:position().x, top:position().y}">
+			<div class="sheetItem" style="position:absolute;" data-bind="style: {left:position().x, top:position().y}, css:{beingEdited:isEditing()}">
 				<span data-bind="visible:!isEditing(), text:value, click:startEditing"></span>
 				<input autofocus="autofocus" data-bind="visible:isEditing, value:value, hasfocus:isEditing, valueUpdate:'afterkeydown', event: { keypress: keypressed}"></input>
 			</div>
@@ -18,6 +19,8 @@
 	</body>
 
 	<script type="text/javascript">
-		
+		$(document).ready(function(){
+			ko.applyBindings(new RootViewModel());	
+		})
 	</script>
 </html>
