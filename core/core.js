@@ -8,10 +8,10 @@ var SheetObject = (function(){
 })();
 
 var Sheet = (function (){
-	var items = [];
-
 	var constructor = function(){
 		var self = this;
+
+		var items = [];
 
 		self.addItem = function(item){
 			items.push(item);
@@ -25,10 +25,24 @@ var Sheet = (function (){
 
 
 var SingleValueSource = (function(){
-	var value = null;
-
-	var constructor = function (){
+	var constructor = function (definitionEvaluator){
 		var self = this;
+
+		var value = null;
+		var definition = null;
+		var evaluator = null;
+		//pass-through evaluator
+		var evaluate = function(expression){
+			return expression;
+		}
+
+
+		if(typeof(definitionEvaluator) !== 'undefined')
+		{
+			evaluator = definitionEvaluator;
+			evaluate = evaluator.evaluate;
+		}
+
 
 		self.Value = function (newValue){
 			if(typeof(newValue) === 'undefined'){
@@ -37,6 +51,16 @@ var SingleValueSource = (function(){
 
 			value = newValue;
 			self.trigger('valueChanged', newValue);
+		}
+
+		self.Definition = function(newDefinition){
+			if(typeof(newDefinition) === 'undefined'){
+				return definition;
+			}
+
+			definition = newDefinition;
+			self.trigger('definitionChanged', newDefinition);
+			self.Value(evaluate(definition));
 		}
 	}
 

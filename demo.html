@@ -4,6 +4,7 @@
 		<link href="ui/style/style.css" rel="stylesheet">
 		<script type="text/javascript" src="lib/microevent/microevent.js"></script>
 		<script type="text/javascript" src="core/core.js"></script>
+		<script type="text/javascript" src="expressionEvaluators/simpleEvaluator.js"></script>
 		<script type="text/javascript" src="lib/knockout/knockout-2.2.0.js"></script>
 		<script type="text/javascript" src="lib/jquery/jquery-1.8.2.min.js"></script>
 		<script type="text/javascript" src="ui/ui.js"></script>
@@ -12,7 +13,7 @@
 		<script id="sheetItemTemplate" type="text/html">
 			<div class="sheetItem" style="position:absolute;" data-bind="style: {left:position().x, top:position().y}, css:{beingEdited:isEditing()}">
 				<span data-bind="visible:!isEditing(), text:value, click:startEditing"></span>
-				<input autofocus="autofocus" data-bind="visible:isEditing, value:value, hasfocus:isEditing, valueUpdate:'afterkeydown', event: { keypress: keypressed}"></input>
+				<input autofocus="autofocus" data-bind="visible:isEditing, value:definition, hasfocus:isEditing, valueUpdate:'afterkeydown', event: { keypress: keypressed}"></input>
 			</div>
 		</script>
 

@@ -1,22 +1,26 @@
 var SingleValueViewModel = (function(){
-	var valueObject;
-	var sheetObject;
 
 	return function(sheetObj){
 		var self = this;
 
-		sheetObject = sheetObj;
-		valueObject = sheetObj.item;
-
-		valueObject.bind('valueChanged', function(newValue){
-			self.value(newValue);
-		});
+		var sheetObject = sheetObj;
+		var valueObject = sheetObj.item;
+		
 
 		self.position = ko.observable(sheetObject.position);
 		self.positionx = ko.observable(sheetObject.position.x);
 
-		//this is currently a one way initialisation from the model object
 		self.value = ko.observable(valueObject.Value());
+		valueObject.bind('valueChanged', function(newValue){
+			self.value(newValue);
+		});
+
+
+		self.definition = ko.observable(valueObject.Definition());
+		self.definition.subscribe(function(newDefinitionValue){
+			valueObject.Definition(newDefinitionValue);
+		});
+
 
 		self.isEditing = ko.observable(true);
 
@@ -38,11 +42,12 @@ var SingleValueViewModel = (function(){
 
 
 var SheetVM = (function(){
-	var sheet;
 
 	return function(){
 		var self = this;
 
+		var sheet;
+		
 		self.items = ko.observableArray();
 
 		sheet = new Sheet();
@@ -52,8 +57,7 @@ var SheetVM = (function(){
 
 
 		self.addItemAtPosition = function(position){
-			var svs = new SingleValueSource();
-			svs.Value();
+			var svs = new SingleValueSource(new SimpleEvaluator()); //note: this should be done by the sheet, or something in core
 			var item = new SheetObject(svs, position);
 			
 			sheet.addItem(item);
