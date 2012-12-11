@@ -1,7 +1,5 @@
-test( "hello test", function() {
-  ok( 1 == "1", "Passed!" );
-});
 
+module("SingleValueSource Tests")
 test("can create SingleValueSource", function() {
 	var svs = new SingleValueSource();
 	ok( svs != null);
@@ -96,6 +94,9 @@ test("setting the definition on a SingleValueSource causes the value to change t
 	equal(3, svs.Value());
 })
 
+
+
+module("Sheet Tests")
 test("Adding an item to the sheet raises an itemAdded event on the sheet with the new item as an event argument", function(){
 	var itemToAdd = new SheetObject(new SingleValueSource(), {x:0,y:0});
 
@@ -113,4 +114,3 @@ test("Adding an item to the sheet raises an itemAdded event on the sheet with th
 	ok(eventFired);
 	strictEqual(itemInEvent, itemToAdd);
 })
-
