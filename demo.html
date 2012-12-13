@@ -11,8 +11,8 @@
 	</head>
 	<body>
 		<script id="sheetItemTemplate" type="text/html">
-			<div class="sheetItem" style="position:absolute;" data-bind="style: {left:position().x, top:position().y}, css:{beingEdited:isEditing()}">
-				<span data-bind="visible:!isEditing(), text:value, click:startEditing"></span>
+			<div class="sheetItem" style="position:absolute;" data-bind="style: {left:position().x, top:position().y}, css:{beingEdited:isEditing()}, click:startEditing">
+				<span data-bind="visible:!isEditing(), text:value"></span>
 				<input autofocus="autofocus" data-bind="visible:isEditing, value:definition, hasfocus:isEditing, valueUpdate:'afterkeydown', event: { keypress: keypressed}"></input>
 			</div>
 		</script>
