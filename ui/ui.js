@@ -1,6 +1,6 @@
 var SingleValueViewModel = (function(){
 
-	return function(sheetObj){
+	var constructor = function(sheetObj){
 		var self = this;
 
 		var sheetObject = sheetObj;
@@ -21,11 +21,13 @@ var SingleValueViewModel = (function(){
 			valueObject.Definition(newDefinitionValue);
 		});
 
+		self.name = ko.observable();
 
 		self.isEditing = ko.observable(true);
 
 		self.startEditing = function(data, event){
 			self.isEditing(true);
+			self.trigger('beganEdit',self);
 		};
 
 		self.keypressed = function(data, event){
@@ -38,6 +40,9 @@ var SingleValueViewModel = (function(){
 		};
 
 	};
+
+	MicroEvent.mixin(constructor);
+	return constructor;
 })();
 
 
@@ -50,9 +55,19 @@ var SheetVM = (function(){
 		
 		self.items = ko.observableArray();
 
+		self.onActiveItemChanged = function(newActiveItem){
+			var itemsToDeactivate = self.items().filter(function(item){return item !== newActiveItem});
+			for (var i = 0; i < itemsToDeactivate.length; i++) {
+				itemsToDeactivate[i].isEditing(false);
+			};
+		};
+
 		sheet = new Sheet();
 		sheet.bind('itemAdded', function(newItem){
-			self.items.push(new SingleValueViewModel(newItem));
+			var itemVM = new SingleValueViewModel(newItem);
+			itemVM.bind('beganEdit', self.onActiveItemChanged);
+			self.items.push(itemVM);
+			self.onActiveItemChanged(itemVM);
 		});
 
 
