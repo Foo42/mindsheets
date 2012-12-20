@@ -39,6 +39,16 @@ var SimpleEvaluator = (function(){
 						total *= evaluateExpression(term);
 					};
 					return total;
+				}},
+
+				{op:'/',
+				func:function(terms){
+					var total = evaluateExpression(terms[0]);
+					for (var i = 1; i < terms.length; i++) {
+						var term = terms[i];
+						total /= evaluateExpression(term);
+					};
+					return total;
 				}}
 			];
 

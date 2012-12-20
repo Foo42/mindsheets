@@ -31,6 +31,14 @@ test("Given a subtraction expression with two interger terms, returns the correc
 	equal(evaluator.evaluate(expression), 2);
 })
 
+test("Given a division expression with two interger terms, returns the correct result", function(){
+	var evaluator = new SimpleEvaluator();
+
+	var expression = "=8/4";
+
+	equal(evaluator.evaluate(expression), 2);
+})
+
 test("Given an expression containing additions and subtractions, returns the correct result", function(){
 	var evaluator = new SimpleEvaluator();
 
