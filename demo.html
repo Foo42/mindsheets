@@ -12,8 +12,8 @@
 	<body>
 		<script id="sheetItemTemplate" type="text/html">
 			<div class="sheetItem" style="position:absolute;" data-bind="style: {left:position().x, top:position().y}, css:{beingEdited:isEditing()}, click:startEditing">				
-				<input placeholder='name' data-bind='visible:isEditing, value:name'>
-				<span data-bind="visible:!isEditing(), text:name() + ':'"></span>
+				<input placeholder='name' data-bind='visible:isEditing, value:requestedName'>
+				<span data-bind="visible:!isEditing(), text: name() ? name() + ':' : '' "></span>
 
 				<input autofocus="autofocus" placeholder='value expression' data-bind="visible:isEditing, value:definition, valueUpdate:'afterkeydown', event: { keypress: keypressed}"></input>
 				<span data-bind="visible:!isEditing(), text:value"></span>
@@ -23,11 +23,11 @@
 
 		<div id="sheetArea" style="height:600px; width:900px;" data-bind="template:{name:'sheetItemTemplate', foreach:sheet.items}, click:sheet.clicked">			
 		</div>
+	
+		<script type="text/javascript">
+			$(document).ready(function(){
+				ko.applyBindings(new RootViewModel());	
+			})
+		</script>
 	</body>
-
-	<script type="text/javascript">
-		$(document).ready(function(){
-			ko.applyBindings(new RootViewModel());	
-		})
-	</script>
 </html>

@@ -2,32 +2,41 @@ var SingleValueViewModel = (function(){
 
 	var constructor = function(sheetObj){
 		var self = this;
-
-		var sheetObject = sheetObj;
 		var valueObject = sheetObj.item;
 		
+		//public properties
+		self.position      = ko.observable(sheetObj.position);
+		self.value         = ko.observable(valueObject.Value());
+		self.definition    = ko.observable(valueObject.Definition());
+		self.name          = ko.observable();
+		self.requestedName = ko.observable();
+		self.isEditing     = ko.observable(true);
 
-		self.position = ko.observable(sheetObject.position);
-		self.positionx = ko.observable(sheetObject.position.x);
 
-		self.value = ko.observable(valueObject.Value());
+		//Subscribe to model events
 		valueObject.bind('valueChanged', function(newValue){
 			self.value(newValue);
 		});
 
+		valueObject.bind('nameChanged', function(newName){
+			self.name = newName;
+		});
 
-		self.definition = ko.observable(valueObject.Definition());
+		
+		// Update the model when our observables change
 		self.definition.subscribe(function(newDefinitionValue){
 			valueObject.Definition(newDefinitionValue);
 		});
+		
+		self.requestedName.subscribe(function(newValue){
+			valueObject.name = newValue;
+		});
 
-		self.name = ko.observable();
-
-		self.isEditing = ko.observable(true);
-
+		
+		//public methods
 		self.startEditing = function(data, event){
 			self.isEditing(true);
-			self.trigger('beganEdit',self);
+			self.trigger('startedEditing',self);
 		};
 
 		self.keypressed = function(data, event){
@@ -48,29 +57,26 @@ var SingleValueViewModel = (function(){
 
 var SheetVM = (function(){
 
-	return function(){
+	return function(sheetModel){
 		var self = this;
-
-		var sheet;
+		var sheet = sheetModel;
 		
+
+		//public properties
 		self.items = ko.observableArray();
 
-		self.onActiveItemChanged = function(newActiveItem){
-			var itemsToDeactivate = self.items().filter(function(item){return item !== newActiveItem});
-			for (var i = 0; i < itemsToDeactivate.length; i++) {
-				itemsToDeactivate[i].isEditing(false);
-			};
-		};
 
-		sheet = new Sheet();
+		//subscribe to model events
 		sheet.bind('itemAdded', function(newItem){
 			var itemVM = new SingleValueViewModel(newItem);
-			itemVM.bind('beganEdit', self.onActiveItemChanged);
+
+			itemVM.bind('startedEditing', onActiveItemChanged);
 			self.items.push(itemVM);
-			self.onActiveItemChanged(itemVM);
+			onActiveItemChanged(itemVM);
 		});
+		
 
-
+		//public methods
 		self.addItemAtPosition = function(position){
 			var svs = new SingleValueSource(new SimpleEvaluator()); //note: this should be done by the sheet, or something in core
 			var item = new SheetObject(svs, position);
@@ -86,17 +92,28 @@ var SheetVM = (function(){
 			var pos = {x:event.pageX + "px", y:event.pageY + "px"};
 			self.addItemAtPosition(pos);
 		}
+
+
+		//private methods
+		var onActiveItemChanged = function(newActiveItem){		
+			var itemsToDeactivate = self.items().filter(function(item){
+				return item !== newActiveItem
+			});
+			
+			itemsToDeactivate.forEach(function(item){
+				item.isEditing(false);
+			});
+		};
 	}
 })();
+
+
 
 var RootViewModel = (function(){
 	return function(){
 		var self = this;
 
-		self.test = "hello world";
-
-		self.sheet = new SheetVM();
-
+		self.sheet = new SheetVM(new Sheet());
 	};
 })();
 
