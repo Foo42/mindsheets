@@ -54,3 +54,11 @@ test("Given an expression containing additions, subtractions and multiplications
 
 	equal(evaluator.evaluate(expression), -4);
 })
+
+test("Check operator precedence, multiplication over addition", function(){
+	var evaluator = new SimpleEvaluator();
+
+	var expression = "=2+3*4";
+
+	equal(evaluator.evaluate(expression), 14);
+})
