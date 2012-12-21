@@ -6,39 +6,47 @@ var SimpleEvaluator = (function(){
 
 	return function(){
 		var self = this;
-		
+
+		//Private
+		var applyOperator = function (terms, operatorFunction) {
+			var total =  evaluateExpression(terms[0]);
+			for (var i = 1; i < terms.length; i++) {
+				var term = terms[i];
+				total = operatorFunction(total, evaluateExpression(term));
+			};
+			return total;			
+		}
+
 		//Private
 		var evaluateExpression = function(expression){
 			var operators = [
 				
 				{op:'+',
 				func:function(terms){
-					var total = 0;
-					for (var i = 0; i < terms.length; i++) {
-						var term = terms[i];
-						total += evaluateExpression(term);
-					};
-					return total;
+					return applyOperator(terms, function (operand1, operand2){
+						return operand1 + operand2;
+					});
 				}},
 
 				{op:'-',
 				func:function(terms){
-					var total = evaluateExpression(terms[0]);
-					for (var i = 1; i < terms.length; i++) {
-						var term = terms[i];
-						total -= evaluateExpression(term);
-					};
-					return total;
+					return applyOperator(terms, function (operand1, operand2){
+						return operand1 - operand2;
+					});
 				}},
 
 				{op:'*',
 				func:function(terms){
-					var total = evaluateExpression(terms[0]);
-					for (var i = 1; i < terms.length; i++) {
-						var term = terms[i];
-						total *= evaluateExpression(term);
-					};
-					return total;
+					return applyOperator(terms, function (operand1, operand2){
+						return operand1 * operand2;
+					});
+				}},
+
+				{op:'/',
+				func:function(terms){
+					return applyOperator(terms, function (operand1, operand2){
+						return operand1 / operand2;
+					});
 				}}
 			];
 
@@ -69,7 +77,5 @@ var SimpleEvaluator = (function(){
 			
 			return expression;
 		}
-
-		
 	}
 })();
