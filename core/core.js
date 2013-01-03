@@ -1,8 +1,8 @@
 
-var SheetObject = (function(){
-	return function(item, position){
+var SheetElement = (function(){
+	return function(valueSource, position){
 		var self = this;
-		self.item = item;
+		self.valueSource = valueSource;
 		self.position = position;
 	}
 })();

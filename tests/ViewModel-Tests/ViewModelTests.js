@@ -3,7 +3,7 @@ test("SingleValueViewModel updates its value when its SingleValueSource changes 
 	//Arrange
 	var svs = new SingleValueSource();
 	svs.Value(1);
-	var vm = new SingleValueViewModel({item:svs});
+	var vm = new SingleValueViewModel({valueSource:svs});
 	var viewModelRaisedEvent = false;
 	vm.value.subscribe(function(){viewModelRaisedEvent = true});
 
@@ -20,7 +20,7 @@ test("Changing the definition on a SingleValueViewModel updates the definition o
 	//Arrange
 	var svs = new SingleValueSource();
 	svs.Definition("0");
-	var vm = new SingleValueViewModel({item:svs});
+	var vm = new SingleValueViewModel({valueSource:svs});
 
 	//Act
 	vm.definition("1");
@@ -41,7 +41,7 @@ test("When the Sheet model adds an item, the SheetViewModel adds a corresponding
 	var itemToAdd = new SingleValueSource();
 
 	//Act
-	sheetModel.addItem({item:itemToAdd});
+	sheetModel.addItem({valueSource:itemToAdd});
 
 	//Assert
 	ok(vmRaisedEvent);

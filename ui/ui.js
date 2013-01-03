@@ -2,7 +2,7 @@ var SingleValueViewModel = (function(){
 
 	var constructor = function(sheetObj){
 		var self = this;
-		var valueObject = sheetObj.item;
+		var valueObject = sheetObj.valueSource;
 		
 		//public properties
 		self.position      = ko.observable(sheetObj.position);
@@ -79,7 +79,7 @@ var SheetVM = (function(){
 		//public methods
 		self.addItemAtPosition = function(position){
 			var svs = new SingleValueSource(new SimpleEvaluator()); //note: this should be done by the sheet, or something in core
-			var item = new SheetObject(svs, position);
+			var item = new SheetElement(svs, position);
 			
 			sheet.addItem(item);
 		};
