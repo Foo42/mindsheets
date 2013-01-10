@@ -12,6 +12,23 @@ var Sheet = (function (){
 		var self = this;
 
 		var items = [];
+		var names = [];		
+
+		self.trySetName = function(item, newName){
+			var matchingRecords = names.filter(function(nameRecord){return nameRecord.item == item});
+			if(matchingRecords.length > 0)
+			{
+				matchingRecords[0].name = newName;
+				self.trigger('nameAssigned', matchingRecords[0]);
+			}
+			else
+			{
+				var newNameRecord = {item:item, name:newName};
+				names.push(newNameRecord);
+				self.trigger('nameAssigned', newNameRecord);
+			}
+
+		}
 
 		self.addItem = function(item){
 			items.push(item);

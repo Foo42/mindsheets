@@ -114,3 +114,46 @@ test("Adding an item to the sheet raises an itemAdded event on the sheet with th
 	ok(eventFired);
 	strictEqual(itemInEvent, itemToAdd);
 })
+
+test("Sheet raises a nameAssigned event when trySetName is called for an item which was not previously named", function(){
+	var itemToAdd = new SheetElement(new SingleValueSource(), {x:0,y:0});
+	var sheet = new Sheet();
+	sheet.addItem(itemToAdd);
+
+	var eventFired = false;
+	var recordInEvent = null;
+	
+	sheet.bind("nameAssigned", function(record){
+		eventFired = true;
+		recordInEvent = record;
+	});
+
+	sheet.trySetName(itemToAdd, "Foo");
+	
+	ok(eventFired);
+	notStrictEqual(recordInEvent, {item:itemToAdd, name:"Foo"});	
+});
+
+test("Sheet raises a nameAssigned event with new name, when trySetName is called for an item which already had a name before", function(){
+	var itemToAdd = new SheetElement(new SingleValueSource(), {x:0,y:0});
+	var sheet = new Sheet();
+	sheet.addItem(itemToAdd);
+	var originalName = "Foo";
+	sheet.trySetName(itemToAdd, "Foo");
+
+	var eventFired = false;
+	var recordInEvent = null;
+	
+	sheet.bind("nameAssigned", function(record){
+		eventFired = true;
+		recordInEvent = record;
+	});
+
+	//Act
+	var newerName = "Bar";
+	sheet.trySetName(itemToAdd, newerName);
+	
+	//Assert
+	ok(eventFired);
+	notStrictEqual(recordInEvent, {item:itemToAdd, name:newerName});	
+});

@@ -1,14 +1,13 @@
 var SingleValueViewModel = (function(){
 
-	var constructor = function(sheetObj){
+	var constructor = function(sheetEntity, hostingSheet){
 		var self = this;
-		var valueObject = sheetObj.valueSource;
+		var valueObject = sheetEntity.valueSource;
 		
 		//public properties
-		self.position      = ko.observable(sheetObj.position);
+		self.position      = ko.observable(sheetEntity.position);
 		self.value         = ko.observable(valueObject.Value());
 		self.definition    = ko.observable(valueObject.Definition());
-		self.name          = ko.observable();
 		self.requestedName = ko.observable();
 		self.isEditing     = ko.observable(true);
 
@@ -18,18 +17,14 @@ var SingleValueViewModel = (function(){
 			self.value(newValue);
 		});
 
-		valueObject.bind('nameChanged', function(newName){
-			self.name = newName;
-		});
-
 		
 		// Update the model when our observables change
 		self.definition.subscribe(function(newDefinitionValue){
 			valueObject.Definition(newDefinitionValue);
 		});
-		
-		self.requestedName.subscribe(function(newValue){
-			valueObject.name = newValue;
+
+		self.requestedName.subscribe(function(name){
+			hostingSheet.trySetName(sheetEntity, name);
 		});
 
 		
@@ -64,15 +59,36 @@ var SheetVM = (function(){
 
 		//public properties
 		self.items = ko.observableArray();
+		self.nameAssignments = ko.observableArray();
 
 
 		//subscribe to model events
 		sheet.bind('itemAdded', function(newItem){
-			var itemVM = new SingleValueViewModel(newItem);
+			var itemVM = new SingleValueViewModel(newItem, sheet);
 
 			itemVM.bind('startedEditing', onActiveItemChanged);
+			itemVM.requestedName.subscribe(function(newName){
+				sheet.trySetName(newItem, newName)
+			});
+
+			itemVM.name = ko.computed(function(){
+				var namesForThisItem = self.nameAssignments().filter(function(assignment){return assignment.item == newItem});
+				if(namesForThisItem.length > 0)
+					return namesForThisItem[0].name;
+				return
+					undefined;
+			},itemVM);
+
 			self.items.push(itemVM);
 			onActiveItemChanged(itemVM);
+		});
+
+		sheet.bind('nameAssigned', function(nameRecord){
+			var existingNameRecordsForItem = self.nameAssignments().filter(function(assigment){return assigment.item == nameRecord.item});
+			self.nameAssignments.removeAll(existingNameRecordsForItem);
+					
+			self.nameAssignments.push(nameRecord);
+			
 		});
 		
 
