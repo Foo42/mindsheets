@@ -9,12 +9,21 @@ var SingleValueViewModel = (function(){
 		self.value         = ko.observable(valueObject.Value());
 		self.definition    = ko.observable(valueObject.Definition());
 		self.requestedName = ko.observable();
+        self.name          = ko.observable();
 		self.isEditing     = ko.observable(true);
 
 
 		//Subscribe to model events
 		valueObject.bind('valueChanged', function(newValue){
 			self.value(newValue);
+		});
+        
+        hostingSheet.bind('nameAssigned', function(nameRecord){
+            if(nameRecord.item == sheetEntity)
+            {
+                self.name(nameRecord.name);
+            }
+            
 		});
 
 		
@@ -59,7 +68,6 @@ var SheetVM = (function(){
 
 		//public properties
 		self.items = ko.observableArray();
-		self.nameAssignments = ko.observableArray();
 
 
 		//subscribe to model events
@@ -71,27 +79,11 @@ var SheetVM = (function(){
 				sheet.trySetName(newItem, newName)
 			});
 
-			itemVM.name = ko.computed(function(){
-				var namesForThisItem = self.nameAssignments().filter(function(assignment){return assignment.item == newItem});
-				if(namesForThisItem.length > 0)
-					return namesForThisItem[0].name;
-				return
-					undefined;
-			},itemVM);
-
-			self.items.push(itemVM);
+		    self.items.push(itemVM);
 			onActiveItemChanged(itemVM);
 		});
 
-		sheet.bind('nameAssigned', function(nameRecord){
-			var existingNameRecordsForItem = self.nameAssignments().filter(function(assigment){return assigment.item == nameRecord.item});
-			self.nameAssignments.removeAll(existingNameRecordsForItem);
-					
-			self.nameAssignments.push(nameRecord);
-			
-		});
 		
-
 		//public methods
 		self.addItemAtPosition = function(position){
 			var svs = new SingleValueSource(new SimpleEvaluator()); //note: this should be done by the sheet, or something in core

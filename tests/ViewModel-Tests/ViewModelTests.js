@@ -1,9 +1,14 @@
+var getSheetForTests = function(){
+    return new Sheet();
+}
+
+
 module("SingleValueViewModel Tests");
 test("SingleValueViewModel updates its value when its SingleValueSource changes its value", function() {
 	//Arrange
 	var svs = new SingleValueSource();
 	svs.Value(1);
-	var vm = new SingleValueViewModel({valueSource:svs});
+	var vm = new SingleValueViewModel({valueSource:svs}, getSheetForTests());
 	var viewModelRaisedEvent = false;
 	vm.value.subscribe(function(){viewModelRaisedEvent = true});
 
@@ -20,7 +25,7 @@ test("Changing the definition on a SingleValueViewModel updates the definition o
 	//Arrange
 	var svs = new SingleValueSource();
 	svs.Definition("0");
-	var vm = new SingleValueViewModel({valueSource:svs});
+	var vm = new SingleValueViewModel({valueSource:svs}, getSheetForTests());
 
 	//Act
 	vm.definition("1");
@@ -36,11 +41,14 @@ test("Setting requestedName on a SingleValueViewModel causes it to call trySetNa
 	var functionWasCalled = false;
 	var itemPassedInFunction;
 	var nameRequestedInFunction;
-	var sheet = {trySetName:function(item, requestedName){
-		functionWasCalled=true;
-		itemPassedInFunction = item;
-		nameRequestedInFunction = requestedName;
-	}};
+	var sheet = {
+        trySetName:function(item, requestedName){
+		    functionWasCalled=true;
+		    itemPassedInFunction = item;
+		    nameRequestedInFunction = requestedName;
+	    },
+        bind:function(){}
+    };
 
 	var vm = new SingleValueViewModel(itemToAdd, sheet);
 
@@ -53,7 +61,7 @@ test("Setting requestedName on a SingleValueViewModel causes it to call trySetNa
 	strictEqual(nameRequestedInFunction, "Foo");
 });
 
-test("SingleValueViewModel name property takes its value from name assigment in sheetVM", function(){
+test("SingleValueViewModel name property takes its value from name assigment on sheet", function(){
 	//Arrange
 	var sheetModel = new Sheet();
 	var sheetVM = new SheetVM(sheetModel);
@@ -91,38 +99,21 @@ test("When the Sheet model adds an item, the SheetViewModel adds a corresponding
 	equal(sheetVM.items().length, 1);
 });
 
-test("When sheet model raises nameAssigned for previously unnamed item, sheetVM adds name record to its nameAssignments collection", function(){
+test("When sheet model assigns a name, view model for that item changes its name", function(){
 	//Arrange
 	var sheet = new Sheet();
 	var item = new SheetElement(new SingleValueSource(), {x:0,y:0});
 	
 	var sheetVM = new SheetVM(sheet);
+    
 	sheet.addItem(item);
+    var itemVM = sheetVM.items()[0];
 
 	//Act
 	sheet.trySetName(item, "Foo");
 
 
 	//Assert
-	equal(sheetVM.nameAssignments().length, 1);
-});
-
-test("When sheet model raises nameAssigned for previously named item, sheetVM replaces name record in its nameAssignments collection", function(){
-	//Arrange
-	var sheet = new Sheet();
-	var item = new SheetElement(new SingleValueSource(), {x:0,y:0});
-	
-	var sheetVM = new SheetVM(sheet);
-	sheet.addItem(item);
-	sheet.trySetName(item, "Foo");
-
-
-	//Act
-	sheet.trySetName(item, "Bar");
-
-
-	//Assert
-	equal(sheetVM.nameAssignments().length, 1);
-	equal(sheetVM.nameAssignments()[0].name, "Bar");
+	equal(itemVM.name(), "Foo");
 });
 
