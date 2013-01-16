@@ -10,6 +10,8 @@
 		<script type="text/javascript" src="ui/ui.js"></script>
 	</head>
 	<body>
+        <p data-bind="visible:sheet.items().length == 0">Click somewhere...</p>
+    
 		<script id="sheetItemTemplate" type="text/html">
 			<div class="sheetItem" style="position:absolute;" data-bind="style: {left:position().x, top:position().y}, css:{beingEdited:isEditing()}, click:startEditing">				
 				<input placeholder='name' data-bind='visible:isEditing, value:requestedName'>
