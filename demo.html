@@ -2,12 +2,9 @@
 	<head>
 		<link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 		<link href="ui/style/style.css" rel="stylesheet">
-		<script type="text/javascript" src="lib/microevent/microevent.js"></script>
-		<script type="text/javascript" src="core/core.js"></script>
-		<script type="text/javascript" src="expressionEvaluators/simpleEvaluator.js"></script>
-		<script type="text/javascript" src="lib/knockout/knockout-2.2.0.js"></script>
-		<script type="text/javascript" src="lib/jquery/jquery-1.8.2.min.js"></script>
-		<script type="text/javascript" src="ui/ui.js"></script>
+		
+        
+        <script data-main="browser-main.js" src="lib/require/require.js"></script>
 	</head>
 	<body>
         <p data-bind="visible:sheet.items().length == 0">Click somewhere...</p>
@@ -29,10 +26,6 @@
 		<div id="sheetArea" style="height:600px; width:900px;" data-bind="template:{name:'sheetItemTemplate', foreach:sheet.items}, click:sheet.clicked">			
 		</div>
 	
-		<script type="text/javascript">
-			$(document).ready(function(){
-				ko.applyBindings(new RootViewModel());	
-			})
-		</script>
+	
 	</body>
 </html>
