@@ -114,7 +114,23 @@ define(['core/core'],function(core){
     	
     	ok(eventFired);
     	strictEqual(itemInEvent, itemToAdd);
-    })
+    });
+    
+    test("Requesting the sheet createItemAt and giving it a set of coordinates, causes it to raise an itemAdded event with a new item with the given coordinates", function(){
+        //Arrange
+        var sheet = new core.Sheet();
+        var coordinatesOfItemInEvent;
+        sheet.bind('itemAdded', function(item){
+            coordinatesOfItemInEvent = item.position;
+        });
+        
+        //Act
+        var requestedCoordinates = {x:2, y:3};
+        sheet.createItemAt(requestedCoordinates);
+        
+        //Assert
+        equal(coordinatesOfItemInEvent, requestedCoordinates);
+    });
     
     test("Sheet raises a nameAssigned event when trySetName is called for an item which was not previously named", function(){
     	var itemToAdd = new core.SheetElement(new core.SingleValueSource(), {x:0,y:0});

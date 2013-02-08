@@ -1,4 +1,4 @@
-define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core', 'expressionEvaluators/simpleEvaluator', 'lib/knockout/custom-bindings'], function(ko, MicroEvent, core, expressionEvaluation){    
+define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core', 'lib/knockout/custom-bindings'], function(ko, MicroEvent, core){    
     var SingleValueViewModel = (function(){
     	var constructor = function(sheetEntity, hostingSheet){
     		var self = this;
@@ -86,10 +86,7 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
     		
     		//public methods
     		self.addItemAtPosition = function(position){
-    			var svs = new core.SingleValueSource(new expressionEvaluation.SimpleEvaluator()); //note: this should be done by the sheet, or something in core
-    			var item = new core.SheetElement(svs, position);
-    			
-    			sheet.addItem(item);
+    			sheet.createItemAt(position);
     		};
     
     		self.clicked = function(data, event){

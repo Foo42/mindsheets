@@ -1,4 +1,4 @@
-define(['lib/microevent/microevent'],function(MicroEvent){
+define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator'],function(MicroEvent, SimpleEvaluator){
     var module = {};
     
     module.SheetElement = (function(){
@@ -36,6 +36,12 @@ define(['lib/microevent/microevent'],function(MicroEvent){
     			items.push(item);
     			self.trigger('itemAdded', item);
     		}
+            
+            self.createItemAt = function(coordinates){
+                var svs = new module.SingleValueSource(new SimpleEvaluator.SimpleEvaluator());
+                var item = new module.SheetElement(svs, coordinates);
+                self.addItem(item);
+            }
     	}
     
     	MicroEvent.mixin(constructor);
