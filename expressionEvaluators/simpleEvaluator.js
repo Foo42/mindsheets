@@ -69,7 +69,32 @@ define([],function(){
     			return parseInt(expression);					
     		}
     
+    
+            var findQuotedStrings = function(string){
+                var quotedStrings = []
+                var openQuote = undefined;
+                
+                for (var i = 0; i < string.length; i++) {
+                    var c = string[i];
+                    if(c === '"'){
+                        if(openQuote){
+                            openQuote.end = i;
+                            quotedStrings.push(openQuote);
+                            openQuote = undefined;
+                        }
+                        else{
+                            openQuote = {start:i,end:undefined};
+                        }
+                    }
+                }
+                return quotedStrings;
+            }
+    
     		//Public
+            self.getDependencies = function(expression){
+                return findQuotedStrings(expression).map(function(indexPair){return expression.substring(indexPair.start+1, indexPair.end)});
+            }
+            
     		self.evaluate = function(expression){
     			if(shouldEvaluateAsExpression(expression))
     			{

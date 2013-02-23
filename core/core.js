@@ -56,18 +56,25 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator'],fun
     		var value = null;
     		var definition = null;
     		var evaluator = null;
+            var dependencies = [];
     		//pass-through evaluator
     		var evaluate = function(expression){
     			return expression;
     		}
+            //default dependency analysis without an evaluator
+            var getDependencies = function(expression){
+                return [];
+            }
     
     
     		if(typeof(definitionEvaluator) !== 'undefined')
     		{
     			evaluator = definitionEvaluator;
     			evaluate = evaluator.evaluate;
+                if(typeof(evaluator.getDependencies) !== 'undefined'){
+                    getDependencies = evaluator.getDependencies;
+                }
     		}
-    
     
     		self.Value = function (newValue){
     			if(typeof(newValue) === 'undefined'){
@@ -77,6 +84,10 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator'],fun
     			value = newValue;
     			self.trigger('valueChanged', newValue);
     		}
+            
+            self.getDependencies = function(){
+                return dependencies;
+            }
     
     		self.Definition = function(newDefinition){
     			if(typeof(newDefinition) === 'undefined'){
@@ -85,6 +96,11 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator'],fun
     
     			definition = newDefinition;
     			self.trigger('definitionChanged', newDefinition);
+                var newDependencies = getDependencies(newDefinition);
+                if(newDependencies != dependencies){
+                    dependencies = newDependencies;
+                    self.trigger('dependenciesChanged');
+                }
     			self.Value(evaluate(definition));
     		}
     	}

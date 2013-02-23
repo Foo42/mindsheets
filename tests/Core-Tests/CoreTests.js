@@ -95,7 +95,67 @@ define(['core/core'],function(core){
     	equal(3, svs.Value());
     })
     
+    test("setting the definition on a SingleValueSource causes it to query its evaluator for expression dependencies", function() {
+       //Arrange
+       var dependenciesWereQueried = false;
+       var evaluator = {evaluate:function(){return 0}, getDependencies:function(){dependenciesWereQueried = true;return []}};
+       var svs = new core.SingleValueSource(evaluator);
+       
+       //Act
+       svs.Definition('=5+1');
+       
+       //Assert
+       ok(dependenciesWereQueried, "single value source did not query for dependencies on evaluator");
+    });
     
+    test("SingleValueSource Dependencies property has the dependencies given by the evaluator for a given definition",function(){
+        //Arrange
+        var dependencies = ["foo","bar"];
+        var evaluator = {evaluate:function(){return 0}, getDependencies:function(){return dependencies}};
+        var svs = new core.SingleValueSource(evaluator);
+       
+        //Act
+        svs.Definition('=something');
+        
+        //Assert
+        equal(svs.getDependencies(), dependencies);
+    })
+    
+    test("SingleValueSource raises 'dependenciesChanged' event if change of definition causes getDependenies function to have a different return value", function(){
+        //Arrange
+        var eventWasFired = false;
+        var evaluator = {
+            evaluate:function(){return 0},
+            getDependencies:function(expression){return expression.length == 0 ? [] : ['stuff']}};
+        
+        var svs = new core.SingleValueSource(evaluator);
+        svs.Definition("");
+        svs.bind("dependenciesChanged", function(){eventWasFired=true;});
+       
+        //Act
+        svs.Definition('=something');
+        
+        //Assert
+        ok(eventWasFired,"event not fired");
+    })
+    
+    test("SingleValueSource does not raise 'dependenciesChanged' event if change of definition does not causes getDependenies function to have a different return value", function(){
+        //Arrange
+        var eventWasFired = false;
+        var evaluator = {
+            evaluate:function(){return 0},
+            getDependencies:function(expression){return ['stuff']}};
+        
+        var svs = new core.SingleValueSource(evaluator);
+        svs.Definition("");
+        svs.bind("dependenciesChanged", function(){eventWasFired=true;});
+       
+        //Act
+        svs.Definition('=something');
+        
+        //Assert
+        ok(!eventWasFired,"event fired incorrectly");
+    })
     
     module("Sheet Tests")
     test("Adding an item to the sheet raises an itemAdded event on the sheet with the new item as an event argument", function(){

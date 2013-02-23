@@ -1,4 +1,9 @@
 define(['expressionEvaluators/simpleEvaluator'],function(SE){
+     
+    var createEvaluator = function(){
+        return new SE.SimpleEvaluator();
+    }
+    
     module("SimpleEvaluatorTests");
 
     test( "Given input which does not start with '=', returns input without modification", function() {
@@ -62,5 +67,15 @@ define(['expressionEvaluators/simpleEvaluator'],function(SE){
     	var expression = "=2+3*4";
     
     	equal(evaluator.evaluate(expression), 14);
-    })    
+    })
+    
+    test("Given an expressions containing a reference by name to another item, returns that name when queried for dependencies", function(){
+       var evaluator = createEvaluator();
+       var expression = '1 + "another cell" + 5'; //note the quotes
+       
+       var dependencies = evaluator.getDependencies(expression);
+       
+       equal(dependencies.length, 1);
+       equal(dependencies[0], 'another cell');
+    });
 });
