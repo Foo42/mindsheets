@@ -88,7 +88,7 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator'],fun
             self.getDependencies = function(){
                 return dependencies;
             }
-    
+
     		self.Definition = function(newDefinition){
     			if(typeof(newDefinition) === 'undefined'){
     				return definition;
@@ -97,7 +97,8 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator'],fun
     			definition = newDefinition;
     			self.trigger('definitionChanged', newDefinition);
                 var newDependencies = getDependencies(newDefinition);
-                if(newDependencies != dependencies){
+                //Not a pretty way to force a value comparison :(
+                if(JSON.stringify(newDependencies) != JSON.stringify(dependencies)){
                     dependencies = newDependencies;
                     self.trigger('dependenciesChanged');
                 }
