@@ -234,4 +234,29 @@ define(['core/core'],function(core){
     	ok(eventFired);
     	notStrictEqual(recordInEvent, {item:itemToAdd, name:newerName});	
     });
+
+    test("When item raises valueChanged, Sheet calls dependencyValueChanged on items who depend on the changed item", function(){
+        //Arrange
+        var sheet = new core.Sheet();
+        var dependencyValueChangedWasCalled = false;
+
+        var dependentValueSource = new core.SingleValueSource();
+        dependentValueSource.getDependencies = function(){return ['a'];};
+        dependentValueSource.dependencyValueChanged = function(dependencyValues){dependencyValueChangedWasCalled = true;}
+        var dependent = new core.SheetElement(dependentValueSource, {x:0,y:0});
+        sheet.addItem(dependent);
+        sheet.trySetName(dependent, "b");
+
+        var dependencyValueSource = new core.SingleValueSource();
+        var dependency = new core.SheetElement(dependencyValueSource, {x:0,y:0});
+        sheet.trySetName(dependency, "a");        
+        sheet.addItem(dependency);
+
+        dependencyValueSource.Definition(2);
+
+        ok(dependencyValueChangedWasCalled);
+    });
+
+    //to test
+    //Items are given their dependencies values when they announce a dependency change.
 });

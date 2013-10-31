@@ -14,10 +14,40 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator'],fun
     		var self = this;
     
     		var items = [];
-    		var names = [];		
+    		var names = [];
+
+            var tryFindNameRecordOfItem = function(item){
+                var matchingRecords = names.filter(function(nameRecord){return nameRecord.item == item});
+                if(matchingRecords.length > 0)
+                {
+                    return matchingRecords[0];
+                }
+                return undefined;
+            }
+
+            var arrayContainsString = function(collection, s){
+                for(i = 0; i < collection.length; i++){
+                    if(collection[i] === s){
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            var notifyDependentsOfValueChange = function(nameValuePair){
+                //Very simplistic implementation which informs ALL items when a value changes, without regard to their stated dependencies.
+                items.forEach(function(item){
+                    var itemDependsOnChangedValue = arrayContainsString(item.valueSource.getDependencies(), nameValuePair.name);
+                    if(itemDependsOnChangedValue){
+                        item.valueSource.dependencyValueChanged(nameValuePair);    
+                    }
+                    
+                })
+            }
     
     		self.trySetName = function(item, newName){
-    			var matchingRecords = names.filter(function(nameRecord){return nameRecord.item == item});
+                //todo, refactor to use above once green
+                var matchingRecords = names.filter(function(nameRecord){return nameRecord.item == item});
     			if(matchingRecords.length > 0)
     			{
     				matchingRecords[0].name = newName;
@@ -34,6 +64,12 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator'],fun
     
     		self.addItem = function(item){
     			items.push(item);
+                item.valueSource.bind('valueChanged', function(newValue){
+                    var name = (tryFindNameRecordOfItem(item) || {}).name;
+                    if(name){
+                        notifyDependentsOfValueChange({name:name, value:newValue});
+                    } 
+                });
     			self.trigger('itemAdded', item);
     		}
             
