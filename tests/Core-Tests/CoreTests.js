@@ -137,7 +137,7 @@ define(['core/core'],function(core){
         
         //Assert
         ok(eventWasFired,"event not fired");
-    })
+    });
     
     test("SingleValueSource does not raise 'dependenciesChanged' event if change of definition does not causes getDependenies function to have a different return value", function(){
         //Arrange
@@ -155,7 +155,22 @@ define(['core/core'],function(core){
         
         //Assert
         ok(!eventWasFired,"event fired incorrectly");
-    })
+    });
+
+    test("When dependencyValueChanged is called on SingleValueSource, it prompts evaluator to evaluate", function(){
+       //Arrange
+       var reevaluated = false;
+       var evaluator = {evaluate:function(){reevaluated = true;return 0}, getDependencies:function(){return ['a']}};
+       var svs = new core.SingleValueSource(evaluator);
+       svs.Definition('=1+1');
+       reevaluated = false; //Just to be sure we are testing for it being called as a result of the 'Act'
+       
+       //Act
+       svs.dependencyValueChanged({a:2});
+       
+       //Assert
+       ok(reevaluated, "single value source did not call evaluate when told a dependency had changed its value"); 
+    });
     
     module("Sheet Tests")
     test("Adding an item to the sheet raises an itemAdded event on the sheet with the new item as an event argument", function(){
@@ -256,7 +271,5 @@ define(['core/core'],function(core){
 
         ok(dependencyValueChangedWasCalled);
     });
-
-    //to test
-    //Items are given their dependencies values when they announce a dependency change.
+    
 });

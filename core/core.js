@@ -140,6 +140,10 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator'],fun
                 }
     			self.Value(evaluate(definition));
     		}
+
+            self.dependencyValueChanged = function(){
+                self.Value(evaluate(self.Definition()));   
+            };
     	}
     
     	MicroEvent.mixin(constructor);
