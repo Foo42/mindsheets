@@ -19,10 +19,70 @@ define([],function(){
     			};
     			return total;			
     		}
+
+            var findNextOperator = function(s, operator){
+                var inQuotedString = false;
+                var subExpressionDepth = 0;
+                for(var i = 0; i< s.length;i++){
+                    var c = s[i];
+                    if(c === '"'){
+                        inQuotedString = !inQuotedString
+                    }
+                    if(inQuotedString){
+                        continue;
+                    }
+
+                    if(c === '('){
+                        subExpressionDepth++;
+                        continue;
+                    }
+                    if(c ===')'){
+                        subExpressionDepth--;
+                        continue;
+                    }
+
+                    if(subExpressionDepth !== 0){
+                        continue;
+                    }
+
+                    if(c === operator){
+                        return i;
+                    }
+                }
+
+                return -1;
+            }
+
+            var splitAt = function(s, i, shouldTrim){
+                var pieces = [(s.substr(0,i)),(s.substr(i+1))];
+                if(shouldTrim){
+                    pieces = pieces.map(function(p){return p.trim()})
+                }
+                return pieces;
+            };
+
+            var stripOuterBrackets = function(s){
+                if(s.length <= 0){
+                    return s;
+                }
+
+                if(s[0] === "("){
+                    s = s.substr(1);    
+                }
+                
+                if(s[s.length - 1] === ")"){
+                    s = s.substr(0,s.length -1);
+                }
+
+                return s;
+            }
     
     		//Private
     		var evaluateExpression = function(expression){
-    			var operators = [
+    			expression = expression.trim();
+                expression = stripOuterBrackets(expression);
+
+                var operators = [
     				
     				{op:'+',
     				func:function(terms){
@@ -56,17 +116,19 @@ define([],function(){
     			//Find first operator which appears
     			for (var i = 0; i < operators.length; i++) {
     				var operator = operators[i];
-    				var pieces = expression.split(operator.op);
-    				if(pieces.length > 1)
-    				{
-    					//apply operator
-    					return operator.func(pieces);
-    				}
-    
+                    var operatorLocation = findNextOperator(expression, operator.op);
+                    if(operatorLocation > -1){
+                        var pieces = splitAt(expression, operatorLocation);    
+                        return operator.func(pieces);
+                    }                    
     			};
     
-    			//No operators found, treat as plain value
-    			return parseInt(expression);					
+    			//No operators found, treat as plain value                
+    			var value = parseInt(expression);
+                if(!isNaN(value)){
+                    return value;
+                }
+
     		}
     
     

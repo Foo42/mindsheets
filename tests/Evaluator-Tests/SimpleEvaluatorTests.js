@@ -78,4 +78,20 @@ define(['expressionEvaluators/simpleEvaluator'],function(SE){
        equal(dependencies.length, 1);
        equal(dependencies[0], 'another cell');
     });
+
+    test("Given an expression in parenthesis, returns value of enclosed expression", function(){
+      var evaluator = new SE.SimpleEvaluator();
+    
+        var expression = "=(2+3*4)";
+    
+        equal(evaluator.evaluate(expression), 14);  
+    });
+
+    test("Given an expression containing a subexpression in parenthesis, returns correct value", function(){
+      var evaluator = new SE.SimpleEvaluator();
+    
+        var expression = "=4*(1+2)";
+    
+        equal(evaluator.evaluate(expression), 12);  
+    });
 });
