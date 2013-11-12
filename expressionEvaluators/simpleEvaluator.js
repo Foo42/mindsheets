@@ -1,13 +1,13 @@
 define([],function(){
     var module = {};
     
-    module.SimpleEvaluator = (function(){
-    	
+    module.SimpleEvaluator = (function(){    	       
+
     	var shouldEvaluateAsExpression = function(input){
     		return typeof(input) === 'string' && input[0] === '=';
     	}
     
-    	return function(){
+    	return function(dependencyValueLookup){
     		var self = this;
     
     		//Private
@@ -76,6 +76,25 @@ define([],function(){
 
                 return s;
             }
+
+            var stripQuotes = function(s){
+                var quoteCharacter = "\"";
+
+                if(s.length <= 0){
+                    return s;
+                }
+
+                
+                if(s[0] === quoteCharacter){
+                    s = s.substr(1);    
+                }
+                
+                if(s[s.length - 1] === quoteCharacter){
+                    s = s.substr(0,s.length -1);
+                }
+
+                return s;
+            }
     
     		//Private
     		var evaluateExpression = function(expression){
@@ -129,6 +148,7 @@ define([],function(){
                     return value;
                 }
 
+                return dependencyValueLookup(stripQuotes(expression));
     		}
     
     

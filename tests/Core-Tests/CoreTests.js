@@ -271,5 +271,20 @@ define(['core/core'],function(core){
 
         ok(dependencyValueChangedWasCalled);
     });
+
+
+    test("getItemByName", function(){
+        var foo = new core.SheetElement(new core.SingleValueSource(), {x:0,y:0});
+        var sheet = new core.Sheet();
+        sheet.addItem(foo);
+        sheet.trySetName(foo, "Foo");
+
+        var bar = new core.SheetElement(new core.SingleValueSource(), {x:0,y:0});
+        var sheet = new core.Sheet();
+        sheet.addItem(bar);
+        sheet.trySetName(bar, "Bar");
+        
+        equal(sheet.getItemByName("Bar"), bar);
+    });
     
 });

@@ -74,9 +74,24 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator'],fun
     		}
             
             self.createItemAt = function(coordinates){
-                var svs = new module.SingleValueSource(new SimpleEvaluator.SimpleEvaluator());
+                var dependencyLookup = function(name){
+                    var item = self.getItemByName(name);
+                    if(!item){
+                        return undefined;
+                    }
+                    return item.valueSource.Value();
+                }
+                var svs = new module.SingleValueSource(new SimpleEvaluator.SimpleEvaluator(dependencyLookup));
                 var item = new module.SheetElement(svs, coordinates);
                 self.addItem(item);
+            }
+
+            self.getItemByName = function(name){
+                var matchingNameRecords = names.filter(function(nameRecord){return nameRecord.name == name});
+                if(matchingNameRecords.length === 0){
+                    return undefined;
+                }
+                return matchingNameRecords[0].item;
             }
     	}
     

@@ -79,6 +79,22 @@ define(['expressionEvaluators/simpleEvaluator'],function(SE){
        equal(dependencies[0], 'another cell');
     });
 
+    test("Given an expressions containing a reference by name to another item, queries the value of that dependency when evaluating the expression", function(){
+        var dependencyQueried;
+        var valueForDependency = 777;
+        var dependencyValueLookupFunction = function(dependencyName){
+            dependencyQueried = dependencyName;
+            return valueForDependency;
+        }
+        var evaluator = new SE.SimpleEvaluator(dependencyValueLookupFunction);
+        var expression = '=1 + "another cell" + 5'; //note the quotes
+
+        var value = evaluator.evaluate(expression);
+
+        equal(dependencyQueried, 'another cell');
+        equal(value, 1 + 777 + 5);
+    });
+
     test("Given an expression in parenthesis, returns value of enclosed expression", function(){
       var evaluator = new SE.SimpleEvaluator();
     
