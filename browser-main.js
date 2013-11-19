@@ -2,7 +2,10 @@
 
 define.amd.jQuery = true;
 
-require.config({paths:{'jquery':'lib/jquery/jquery-1.8.2.min'}})
+require.config({
+	paths:{'jquery':'lib/jquery/jquery-1.8.2.min'},
+	'packages': [{ 'name': 'lodash', 'location': 'lib/lodash', 'main': 'lodash' }]
+});
 
 require(['jquery','lib/knockout/knockout-2.2.0','ui/ui'],
 function($,ko,viewModel) {

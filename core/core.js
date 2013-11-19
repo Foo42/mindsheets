@@ -1,4 +1,4 @@
-define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator'],function(MicroEvent, SimpleEvaluator){
+define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lodash'],function(MicroEvent, SimpleEvaluator, _){
     var module = {};
     
     module.SheetElement = (function(){
@@ -17,27 +17,12 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator'],fun
     		var names = [];
 
             var tryFindNameRecordOfItem = function(item){
-                var matchingRecords = names.filter(function(nameRecord){return nameRecord.item == item});
-                if(matchingRecords.length > 0)
-                {
-                    return matchingRecords[0];
-                }
-                return undefined;
-            }
-
-            var arrayContainsString = function(collection, s){
-                for(i = 0; i < collection.length; i++){
-                    if(collection[i] === s){
-                        return true;
-                    }
-                }
-                return false;
+                return _.find(names, function(nameRecord){return nameRecord.item == item});
             }
 
             var notifyDependentsOfValueChange = function(nameValuePair){
-                //Very simplistic implementation which informs ALL items when a value changes, without regard to their stated dependencies.
                 items.forEach(function(item){
-                    var itemDependsOnChangedValue = arrayContainsString(item.valueSource.getDependencies(), nameValuePair.name);
+                    var itemDependsOnChangedValue = _.contains(item.valueSource.getDependencies(), nameValuePair.name);
                     if(itemDependsOnChangedValue){
                         item.valueSource.dependencyValueChanged(nameValuePair);    
                     }
