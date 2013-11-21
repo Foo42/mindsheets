@@ -21,30 +21,27 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
             }
 
             var notifyDependentsOfValueChange = function(nameValuePair){
-                items.forEach(function(item){
-                    var itemDependsOnChangedValue = _.contains(item.valueSource.getDependencies(), nameValuePair.name);
-                    if(itemDependsOnChangedValue){
-                        item.valueSource.dependencyValueChanged(nameValuePair);    
-                    }
-                    
-                })
+                var nameOfChangedValue = nameValuePair.name;
+                
+                var itemsWhichDependOnChangedValue = items.filter(function(item){
+                    return _.contains(item.valueSource.getDependencies(), nameValuePair.name)
+                });
+
+                itemsWhichDependOnChangedValue.forEach(function(item){
+                    item.valueSource.dependencyValueChanged(nameValuePair);    
+                });
             }
     
-    		self.trySetName = function(item, newName){
-                //todo, refactor to use above once green
-                var matchingRecords = names.filter(function(nameRecord){return nameRecord.item == item});
-    			if(matchingRecords.length > 0)
-    			{
-    				matchingRecords[0].name = newName;
-    				self.trigger('nameAssigned', matchingRecords[0]);
-    			}
-    			else
-    			{
-    				var newNameRecord = {item:item, name:newName};
-    				names.push(newNameRecord);
-    				self.trigger('nameAssigned', newNameRecord);
-    			}
-    
+    		self.trySetName = function(item, newName){                
+                var nameRecord = tryFindNameRecordOfItem(item);
+                if(nameRecord){
+                    nameRecord.name = newName;
+                }
+                else{
+                    nameRecord = {item:item, name:newName};
+                    names.push(nameRecord);   
+                }
+                self.trigger('nameAssigned', nameRecord);
     		}
     
     		self.addItem = function(item){
