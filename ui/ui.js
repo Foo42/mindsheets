@@ -42,15 +42,11 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
     			self.isEditing(true);
     			self.trigger('startedEditing',self);
     		};
-    
-    		self.keypressed = function(data, event){
-    			if(event.keyCode == 13)
-    			{
-    				event.stopPropagation();
-    				self.isEditing(false);
-    			}
-    			return true;
-    		};
+
+            self.stopEditing = function(data, event){
+                self.isEditing(false);
+                self.trigger('stoppedEditing',self);
+            };
     
     	};
     

@@ -14,7 +14,7 @@
 				<input placeholder='name' data-bind='visible:isEditing, value:requestedName'>
 				<span data-bind="visible:!isEditing(), text: name() ? name() + ':' : '' "></span>
 
-				<input autofocus="autofocus" placeholder='value expression' data-bind="visible:isEditing, value:definition, valueUpdate:'afterkeydown', event: { keypress: keypressed}"></input>
+				<input autofocus="autofocus" placeholder='value expression' data-bind="visible:isEditing, value:definition, valueUpdate:'afterkeydown', returnKey: stopEditing"></input>
 				<span data-bind="visible:!isEditing(), text:value, attr:{title:definition}"></span>
 			</div>
             
