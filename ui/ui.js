@@ -56,28 +56,31 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
     
     
     SheetVM = (function(){
-    
-    	return function(sheetModel){
+
+
+        
+
+        var constructor = function(sheetModel){
     		var self = this;
-    		var sheet = sheetModel;
-    		
+    		var sheet = sheetModel;    		
     
     		//public properties
-    		self.items = ko.observableArray();
-    
+    		self.items = ko.observableArray();    
+
+            var onSheetItemAdded = function(newItem){
+                var itemVM = new SingleValueViewModel(newItem, sheet);
+
+                itemVM.bind('startedEditing', onActiveItemChanged);
+                itemVM.requestedName.subscribe(function(newName){
+                    sheet.trySetName(newItem, newName)
+                });
+
+                self.items.push(itemVM);
+                onActiveItemChanged(itemVM);
+            };
     
     		//subscribe to model events
-    		sheet.bind('itemAdded', function(newItem){
-    			var itemVM = new SingleValueViewModel(newItem, sheet);
-    
-    			itemVM.bind('startedEditing', onActiveItemChanged);
-    			itemVM.requestedName.subscribe(function(newName){
-    				sheet.trySetName(newItem, newName)
-    			});
-    
-    		    self.items.push(itemVM);
-    			onActiveItemChanged(itemVM);
-    		});
+    		sheet.bind('itemAdded', onSheetItemAdded);
     
     		
     		//public methods
@@ -105,7 +108,9 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
     				item.isEditing(false);
     			});
     		};
-    	}
+    	};
+
+        return constructor;
     })();
     
     
