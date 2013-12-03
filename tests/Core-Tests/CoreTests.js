@@ -273,7 +273,7 @@ define(['core/core'],function(core){
     });
 
 
-    test("getItemByName", function(){
+    test("tryFindItemByName", function(){
         var foo = new core.SheetElement(new core.SingleValueSource(), {x:0,y:0});
         var sheet = new core.Sheet();
         sheet.addItem(foo);
@@ -284,7 +284,7 @@ define(['core/core'],function(core){
         sheet.addItem(bar);
         sheet.trySetName(bar, "Bar");
         
-        equal(sheet.getItemByName("Bar"), bar);
+        equal(sheet.tryFindItemByName("Bar"), bar);
     });
     
 });

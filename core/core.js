@@ -11,13 +11,60 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
     
     module.Sheet = (function (){
     	var constructor = function(){
-    		var self = this;
-    
+    		var self = this;    
     		var items = [];
     		var names = [];
 
+            //Public Methods
+            self.createItemAt = function(coordinates){
+                var evaluator = new SimpleEvaluator.SimpleEvaluator(tryGetValueOfItemWithName);
+                var svs = new module.SingleValueSource(evaluator);
+                var item = new module.SheetElement(svs, coordinates);
+                
+                self.addItem(item);
+            }
+
+            self.addItem = function(item){
+                items.push(item);
+
+                item.valueSource.bind('valueChanged', function(newValue){
+                    var name = (tryFindNameRecordOfItem(item) || {}).name;
+                    if(name){
+                        notifyDependentsOfValueChange({name:name, value:newValue});
+                    } 
+                });
+                
+                self.trigger('itemAdded', item);
+            }
+
+            self.trySetName = function(item, newName){                
+                var nameRecord = tryFindNameRecordOfItem(item);
+                if(nameRecord){
+                    nameRecord.name = newName;
+                }
+                else{
+                    nameRecord = {item:item, name:newName};
+                    names.push(nameRecord);   
+                }
+                self.trigger('nameAssigned', nameRecord);
+            }
+
+
+            //Private Methods
             var tryFindNameRecordOfItem = function(item){
                 return _.find(names, function(nameRecord){return nameRecord.item == item});
+            }
+
+            self.tryFindItemByName = function(name){
+                return _.find(names, function(nameRecord){return nameRecord.name == name}).item;
+            }
+
+            var tryGetValueOfItemWithName = function(name){
+                var item = self.tryFindItemByName(name);
+                    if(_.isUndefined(item)){
+                        return undefined;
+                    }
+                    return item.valueSource.Value();
             }
 
             var notifyDependentsOfValueChange = function(nameValuePair){
@@ -30,51 +77,7 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
                 itemsWhichDependOnChangedValue.forEach(function(item){
                     item.valueSource.dependencyValueChanged(nameValuePair);    
                 });
-            }
-    
-    		self.trySetName = function(item, newName){                
-                var nameRecord = tryFindNameRecordOfItem(item);
-                if(nameRecord){
-                    nameRecord.name = newName;
-                }
-                else{
-                    nameRecord = {item:item, name:newName};
-                    names.push(nameRecord);   
-                }
-                self.trigger('nameAssigned', nameRecord);
-    		}
-    
-    		self.addItem = function(item){
-    			items.push(item);
-                item.valueSource.bind('valueChanged', function(newValue){
-                    var name = (tryFindNameRecordOfItem(item) || {}).name;
-                    if(name){
-                        notifyDependentsOfValueChange({name:name, value:newValue});
-                    } 
-                });
-    			self.trigger('itemAdded', item);
-    		}
-            
-            self.createItemAt = function(coordinates){
-                var dependencyLookup = function(name){
-                    var item = self.getItemByName(name);
-                    if(!item){
-                        return undefined;
-                    }
-                    return item.valueSource.Value();
-                }
-                var svs = new module.SingleValueSource(new SimpleEvaluator.SimpleEvaluator(dependencyLookup));
-                var item = new module.SheetElement(svs, coordinates);
-                self.addItem(item);
-            }
-
-            self.getItemByName = function(name){
-                var matchingNameRecords = names.filter(function(nameRecord){return nameRecord.name == name});
-                if(matchingNameRecords.length === 0){
-                    return undefined;
-                }
-                return matchingNameRecords[0].item;
-            }
+            }    		
     	}
     
     	MicroEvent.mixin(constructor);
@@ -100,11 +103,11 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
             }
     
     
-    		if(typeof(definitionEvaluator) !== 'undefined')
+    		if(!_.isUndefined(definitionEvaluator))
     		{
     			evaluator = definitionEvaluator;
     			evaluate = evaluator.evaluate;
-                if(typeof(evaluator.getDependencies) !== 'undefined'){
+                if(!_.isUndefined(evaluator.getDependencies)){
                     getDependencies = evaluator.getDependencies;
                 }
     		}
