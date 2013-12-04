@@ -111,6 +111,8 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
     				item.isEditing(false);
     			});
 
+                itemsToDeactivate.filter(function(item){return !item.definition() && !item.requestedName()}).forEach(function(item){sheet.removeItem(item.model);});
+
     		};
     	};
 
