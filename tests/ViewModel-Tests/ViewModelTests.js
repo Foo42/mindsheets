@@ -100,6 +100,23 @@ define(['core/core', 'ui/ui'],function(core, ui){
     	ok(vmRaisedEvent);
     	equal(sheetVM.items().length, 1);
     });
+
+    test("When the Sheet model removes an item, the SheetViewModel removes the corresponding ItemViewModel", function(){
+        //Arrange
+        var sheetModel = new core.Sheet();
+        var sheetVM = new ui.SheetVM(sheetModel);
+        var itemA = new core.SheetElement(new core.SingleValueSource(), {x:0,y:0});
+        sheetModel.addItem(itemA);
+        equal(sheetVM.items().length, 1);
+
+        sheetVM.items.subscribe(function(){vmRaisedEvent = true});
+        
+        //Act
+        sheetModel.removeItem(itemA);    
+    
+        //Assert
+        equal(sheetVM.items().length, 0);
+    });
     
     test("When sheet model assigns a name, view model for that item changes its name", function(){
     	//Arrange

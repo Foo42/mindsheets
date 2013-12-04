@@ -11,6 +11,7 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
     		self.requestedName = ko.observable();
             self.name          = ko.observable();
     		self.isEditing     = ko.observable(true);
+            self.model         = sheetEntity;
     
     
     		//Subscribe to model events
@@ -57,15 +58,12 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
     
     SheetVM = (function(){
 
-
-        
-
         var constructor = function(sheetModel){
     		var self = this;
     		var sheet = sheetModel;    		
     
     		//public properties
-    		self.items = ko.observableArray();    
+    		self.items = ko.observableArray();                
 
             var onSheetItemAdded = function(newItem){
                 var itemVM = new SingleValueViewModel(newItem, sheet);
@@ -78,9 +76,14 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
                 self.items.push(itemVM);
                 onActiveItemChanged(itemVM);
             };
+
+            var onSheetItemRemoved = function(removedItem){
+                self.items.remove(function(vm){return vm.model === removedItem});
+            };
     
     		//subscribe to model events
     		sheet.bind('itemAdded', onSheetItemAdded);
+            sheet.bind('itemRemoved', onSheetItemRemoved);
     
     		
     		//public methods
@@ -102,17 +105,17 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
     		var onActiveItemChanged = function(newActiveItem){		
     			var itemsToDeactivate = self.items().filter(function(item){
     				return item !== newActiveItem
-    			});
+    			});        
     			
     			itemsToDeactivate.forEach(function(item){
     				item.isEditing(false);
     			});
+
     		};
     	};
 
         return constructor;
     })();
-    
     
     
     RootViewModel = (function(){

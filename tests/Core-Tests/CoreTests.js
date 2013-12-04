@@ -206,6 +206,47 @@ define(['core/core'],function(core){
         //Assert
         equal(coordinatesOfItemInEvent, requestedCoordinates);
     });
+
+    test("foreach calls function on each sheet item", function(){
+        var sheet = new core.Sheet();
+
+        var itemA = new core.SheetElement(new core.SingleValueSource(), {x:0,y:0});
+        sheet.addItem(itemA);
+        var itemB = new core.SheetElement(new core.SingleValueSource(), {x:0,y:0});
+        sheet.addItem(itemB);
+
+        sheet.forEachItem(function(item){item.wasTouched = true});
+
+        ok(itemA.wasTouched);
+        ok(itemB.wasTouched);
+    });
+
+    test("Removing item from the sheet, causes it to be removed and raise an itemRemoved event with the item which was removed", function(){
+        //Arrange
+        var itemWhichWasRemoved;
+        var sheet = new core.Sheet();
+
+        var itemA = new core.SheetElement(new core.SingleValueSource(), {x:0,y:0});
+        sheet.addItem(itemA);
+        var itemB = new core.SheetElement(new core.SingleValueSource(), {x:0,y:0});
+        sheet.addItem(itemB);
+
+
+        sheet.bind('itemRemoved', function(item){
+            itemWhichWasRemoved = item;
+        });
+        
+        //Act        
+        sheet.removeItem(itemB);        
+        
+        //Assert
+        var numberOfSheetItems = 0;
+        sheet.forEachItem(function(item){numberOfSheetItems++;});
+        equal(numberOfSheetItems, 1);
+        equal(itemWhichWasRemoved, itemB);
+    });
+
+    //name is available once item removed?
     
     test("Sheet raises a nameAssigned event when trySetName is called for an item which was not previously named", function(){
     	var itemToAdd = new core.SheetElement(new core.SingleValueSource(), {x:0,y:0});
@@ -286,5 +327,5 @@ define(['core/core'],function(core){
         
         equal(sheet.tryFindItemByName("Bar"), bar);
     });
-    
+
 });

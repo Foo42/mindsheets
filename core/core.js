@@ -37,6 +37,11 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
                 self.trigger('itemAdded', item);
             }
 
+            self.removeItem = function(itemToRemove){
+                _.pull(items, itemToRemove);
+                self.trigger('itemRemoved', itemToRemove);
+            }
+
             self.trySetName = function(item, newName){                
                 var nameRecord = tryFindNameRecordOfItem(item);
                 if(nameRecord){
@@ -47,6 +52,10 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
                     names.push(nameRecord);   
                 }
                 self.trigger('nameAssigned', nameRecord);
+            }
+
+            self.forEachItem = function(func){
+                items.forEach(func);
             }
 
 
