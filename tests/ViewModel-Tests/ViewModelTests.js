@@ -135,6 +135,23 @@ define(['core/core', 'ui/ui'],function(core, ui){
     	//Assert
     	equal(itemVM.name(), "Foo");
     });    
+
+    test("When an item view model with no definition or name is deactivated, it is removed", function(){
+        //Arrange
+        var sheetModel = new core.Sheet();
+        var sheetVM = new ui.SheetVM(sheetModel);
+        
+        var itemA = new core.SingleValueSource();
+        var itemB = new core.SingleValueSource(); 
+        sheetModel.addItem({valueSource:itemA});
+        sheetVM.items()[0].requestedName("foo");
+        sheetModel.addItem({valueSource:itemB});
+
+        //Act & Assert
+        equal(sheetVM.items().length,2);
+        sheetVM.items()[0].startEditing();
+        equal(sheetVM.items().length,1);
+    });
 });
 
 
