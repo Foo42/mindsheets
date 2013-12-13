@@ -1,11 +1,19 @@
 define([],function(){
-    var module = {};
+    var module = {};    
     
-    module.SimpleEvaluator = (function(){    	       
+    module.SimpleEvaluator = (function(){
 
     	var shouldEvaluateAsExpression = function(input){
     		return typeof(input) === 'string' && input[0] === '=';
     	}
+
+        var toBestType = function(input){        
+            if(! isNaN(parseFloat(input))){
+                return parseFloat(input);
+            }
+
+            return input;
+        }
     
     	return function(dependencyValueLookup){
     		var self = this;
@@ -143,12 +151,12 @@ define([],function(){
     			};
     
     			//No operators found, treat as plain value                
-    			var value = parseInt(expression);
+    			var value = parseFloat(expression);
                 if(!isNaN(value)){
                     return value;
                 }
 
-                return dependencyValueLookup(stripQuotes(expression));
+                return toBestType(dependencyValueLookup(stripQuotes(expression)));
     		}
     
     

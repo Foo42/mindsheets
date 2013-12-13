@@ -110,4 +110,17 @@ define(['expressionEvaluators/simpleEvaluator'],function(SE){
     
         equal(evaluator.evaluate(expression), 12);  
     });
+
+    test("Interprets dependency values with number like values as numbers", function(){
+        var valueForDependency = "2";
+        var dependencyValueLookupFunction = function(dependencyName){
+            return valueForDependency;
+        }
+        var evaluator = new SE.SimpleEvaluator(dependencyValueLookupFunction);
+        var expression = '="another cell"+1'; //note the quotes
+
+        var value = evaluator.evaluate(expression);
+
+        equal(value, 3);
+    });
 });
