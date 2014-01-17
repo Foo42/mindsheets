@@ -265,7 +265,7 @@ define(['core/core'],function(core){
     	
     	ok(eventFired);
     	notStrictEqual(recordInEvent, {item:itemToAdd, name:"Foo"});	
-    });
+    });    
     
     test("Sheet raises a nameAssigned event with new name, when trySetName is called for an item which already had a name before", function(){
     	var itemToAdd = new core.SheetElement(new core.SingleValueSource(), {x:0,y:0});
@@ -289,6 +289,16 @@ define(['core/core'],function(core){
     	//Assert
     	ok(eventFired);
     	notStrictEqual(recordInEvent, {item:itemToAdd, name:newerName});	
+    });
+
+    test('Items can be looked up by name', function(){
+        var itemToAdd = new core.SheetElement(new core.SingleValueSource(), {x:0,y:0});
+        var sheet = new core.Sheet();
+        sheet.addItem(itemToAdd);    
+    
+        sheet.trySetName(itemToAdd, "Foo");
+        
+        equal(sheet.tryGetName(itemToAdd), "Foo");
     });
 
     test("When item raises valueChanged, Sheet calls dependencyValueChanged on items who depend on the changed item", function(){
@@ -326,6 +336,51 @@ define(['core/core'],function(core){
         sheet.trySetName(bar, "Bar");
         
         equal(sheet.tryFindItemByName("Bar"), bar);
+    });
+
+    module('Persistance Tests');
+    test("constructing sheet with persisted js for a single unnamed single value source initialises sheet correctly", function(){
+        var persisted = {
+            format:1,
+            data:{
+                items:[
+                    {
+                        definition:'1',
+                        display:{x:10,y:20}
+                    }
+                ]
+            }
+        };
+        var sheet = new core.Sheet(persisted);
+
+        var numberOfItems = 0;
+        var sheetItem;
+        equal(sheet.forEachItem(function(item){
+            numberOfItems++;
+            sheetItem = item;
+        }));
+
+        equal(numberOfItems, 1, "wrong number of items in sheet");
+        equal(sheetItem.valueSource.Definition(), persisted.data.items[0].definition);
+    });
+
+    test("constructing sheet with persisted js for a named single value source initialises sheet correctly", function(){
+       var persisted = {
+            format:1,
+            data:{
+                items:[
+                    {
+                        name:'foo',
+                        definition:'bar',
+                        display:{x:10,y:20}
+                    }
+                ]
+            }
+        };
+        var sheet = new core.Sheet(persisted);
+
+        var namedItem = sheet.tryFindItemByName('foo');
+        equal(namedItem.valueSource.Definition(), 'bar');
     });
 
 });

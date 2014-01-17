@@ -43,14 +43,12 @@ define(['core/core', 'ui/ui'],function(core, ui){
     	var functionWasCalled = false;
     	var itemPassedInFunction;
     	var nameRequestedInFunction;
-    	var sheet = {
-            trySetName:function(item, requestedName){
+        var sheet = getSheetForTests();
+        sheet.trySetName = function(item, requestedName){
     		    functionWasCalled=true;
     		    itemPassedInFunction = item;
     		    nameRequestedInFunction = requestedName;
-    	    },
-            bind:function(){}
-        };
+    	    };
     
     	var vm = new ui.SingleValueViewModel(itemToAdd, sheet);
     
@@ -63,6 +61,22 @@ define(['core/core', 'ui/ui'],function(core, ui){
     	strictEqual(nameRequestedInFunction, "Foo");
     });
     
+    test("SingleValueViewModel initialises name property from name on sheet if it has already been set (ie when loading from persisted data)", function(){
+        //Arrange
+        var sheetModel = new core.Sheet();        
+    
+        var item = new core.SheetElement(new core.SingleValueSource(), {x:0,y:0})
+        sheetModel.addItem(item);
+        var chosenName = "foo";
+        sheetModel.trySetName(item, chosenName);
+    
+        //Act
+        var sheetVM = new ui.SheetVM(sheetModel);
+    
+        //Assert    
+        equal(sheetVM.items()[0].name(), chosenName);
+    });
+
     test("SingleValueViewModel name property takes its value from name assigment on sheet", function(){
     	//Arrange
     	var sheetModel = new core.Sheet();
@@ -83,6 +97,25 @@ define(['core/core', 'ui/ui'],function(core, ui){
     });
     
     module("SheetViewModel Tests");
+    test("When the SheetViewModel is created it creates itemViewModels for Items already presenent on the sheet", function(){
+        //Arrange
+        var sheetModel = new core.Sheet();
+        var itemToAdd = new core.SingleValueSource();
+        itemToAdd.Definition('bar');
+        var sheetElement = {valueSource:itemToAdd};
+        sheetModel.addItem(sheetElement);
+        sheetModel.trySetName(sheetElement, 'foo');
+
+        //act
+        var sheetVM = new ui.SheetVM(sheetModel);
+
+        //assert
+        equal(sheetVM.items().length, 1, "Incorrect number of items in sheetVM");
+        equal(sheetVM.items()[0].definition(), 'bar');
+        equal(sheetVM.items()[0].name(), 'foo');
+        //name?
+    });
+
     test("When the Sheet model adds an item, the SheetViewModel adds a corresponding ItemViewModel", function(){
     	//Arrange
     	var sheetModel = new core.Sheet();

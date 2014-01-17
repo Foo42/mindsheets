@@ -10,7 +10,7 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
     })();
     
     module.Sheet = (function (){
-    	var constructor = function(){
+    	var constructor = function(persisted){
     		var self = this;    
     		var items = [];
     		var names = [];
@@ -28,7 +28,7 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
                 items.push(item);
 
                 item.valueSource.bind('valueChanged', function(newValue){
-                    var name = (tryFindNameRecordOfItem(item) || {}).name;
+                    var name = self.tryGetName(item);
                     if(name){
                         notifyDependentsOfValueChange({name:name, value:newValue});
                     } 
@@ -52,6 +52,10 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
                     names.push(nameRecord);   
                 }
                 self.trigger('nameAssigned', nameRecord);
+            }
+
+            self.tryGetName = function(item){
+                return (tryFindNameRecordOfItem(item) || {}).name;
             }
 
             self.forEachItem = function(func){
@@ -86,7 +90,26 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
                 itemsWhichDependOnChangedValue.forEach(function(item){
                     item.valueSource.dependencyValueChanged(nameValuePair);    
                 });
-            }    		
+            }
+
+            var loadFromPersistedData = function(persisted){
+                persisted.data.items.forEach(function(itemToAdd){
+                    //do simplest thing for now
+
+                    var evaluator = new SimpleEvaluator.SimpleEvaluator();
+                    var svs = new module.SingleValueSource(evaluator);
+                    svs.Definition(itemToAdd.definition);
+                    var item = new module.SheetElement(svs, {x:itemToAdd.display.x, y:itemToAdd.display.y});                    
+                
+                    self.addItem(item);
+                    if(itemToAdd.name){
+                        self.trySetName(item, itemToAdd.name);
+                    }
+                });
+            };
+            if(persisted){
+                loadFromPersistedData(persisted);
+            }
     	}
     
     	MicroEvent.mixin(constructor);

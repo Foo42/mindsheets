@@ -10,6 +10,20 @@ require.config({
 require(['jquery','lib/knockout/knockout-2.2.0','ui/ui'],
 function($,ko,viewModel) {
     $(document).ready(function(){
-		ko.applyBindings(new viewModel.RootViewModel());	
+
+    	document.querySelector('body').classList.add('ready-for-interaction');
+    	var initialState = {
+            format:1,
+            data:{
+                items:[
+                    {
+                    	name: 'example',
+                        definition:'1',
+                        display:{x:10,y:20}
+                    }
+                ]
+            }
+        };
+		ko.applyBindings(new viewModel.RootViewModel(initialState));	
 	});
 });
