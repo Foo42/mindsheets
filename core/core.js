@@ -44,14 +44,21 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
 
             self.trySetName = function(item, newName){                
                 var nameRecord = tryFindNameRecordOfItem(item);
+                var oldName;
                 if(nameRecord){
+                    oldName = nameRecord.name;
                     nameRecord.name = newName;
                 }
                 else{
                     nameRecord = {item:item, name:newName};
                     names.push(nameRecord);   
                 }
+
                 self.trigger('nameAssigned', nameRecord);
+                if(oldName){
+                    notifyDependentsOfValueChange({name:oldName, value:undefined});
+                }
+                notifyDependentsOfValueChange({name:newName, value:nameRecord.item.valueSource.Value()});
             }
 
             self.tryGetName = function(item){
@@ -69,7 +76,8 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
             }
 
             self.tryFindItemByName = function(name){
-                return _.find(names, function(nameRecord){return nameRecord.name == name}).item;
+                var nameRecord = _.find(names, function(nameRecord){return nameRecord.name == name}) || {};
+                return nameRecord.item;
             }
 
             var tryGetValueOfItemWithName = function(name){
@@ -96,7 +104,7 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
                 persisted.data.items.forEach(function(itemToAdd){
                     //do simplest thing for now
 
-                    var evaluator = new SimpleEvaluator.SimpleEvaluator();
+                    var evaluator = new SimpleEvaluator.SimpleEvaluator(tryGetValueOfItemWithName);
                     var svs = new module.SingleValueSource(evaluator);
                     svs.Definition(itemToAdd.definition);
                     var item = new module.SheetElement(svs, {x:itemToAdd.display.x, y:itemToAdd.display.y});                    

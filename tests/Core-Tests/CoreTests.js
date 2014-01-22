@@ -324,6 +324,55 @@ define(['core/core'],function(core){
     });
 
 
+    test("When items name is changed, Sheet calls dependencyValueChanged on any items which depend on new name",function(){
+       //Arrange
+        var sheet = new core.Sheet();
+        var dependencyValueChangedWasCalled = false;
+
+        var dependentValueSource = new core.SingleValueSource();
+        dependentValueSource.getDependencies = function(){return ['dependended on'];};
+        dependentValueSource.dependencyValueChanged = function(dependencyValues){dependencyValueChangedWasCalled = true;}        
+        var dependent = new core.SheetElement(dependentValueSource, {x:0,y:0});
+        sheet.addItem(dependent);
+
+        var dependencyValueSource = new core.SingleValueSource();
+        var dependency = new core.SheetElement(dependencyValueSource, {x:0,y:0});
+        dependencyValueSource.Definition(2);        
+        sheet.addItem(dependency);
+        
+        //Act
+        sheet.trySetName(dependency, "dependended on");        
+
+        equal(dependencyValueChangedWasCalled, true, "expected dependencyValueChanged to be called, but was not"); 
+    });
+
+test("When items name is changed, Sheet calls dependencyValueChanged on any items which depend on old name since that name no longer has a value",function(){
+       //Arrange
+        var sheet = new core.Sheet();
+        var dependencyValueChangedWasCalled = false;
+
+        var dependentValueSource = new core.SingleValueSource();
+        dependentValueSource.getDependencies = function(){return ['dependended on'];};
+        dependentValueSource.dependencyValueChanged = function(dependencyValues){dependencyValueChangedWasCalled = true;}        
+        var dependent = new core.SheetElement(dependentValueSource, {x:0,y:0});
+        sheet.addItem(dependent);
+
+        var dependencyValueSource = new core.SingleValueSource();
+        var dependency = new core.SheetElement(dependencyValueSource, {x:0,y:0});
+        dependencyValueSource.Definition(2);        
+        sheet.addItem(dependency);
+        sheet.trySetName(dependency, "dependended on");        
+        dependencyValueChangedWasCalled = false; //we are only interested in calls during the act phase
+        
+        //Act
+        sheet.trySetName(dependency, "not depended on anymore");        
+
+        //Assert
+        equal(dependencyValueChangedWasCalled, true, "expected dependencyValueChanged to be called, but was not"); 
+    });
+
+
+
     test("tryFindItemByName", function(){
         var foo = new core.SheetElement(new core.SingleValueSource(), {x:0,y:0});
         var sheet = new core.Sheet();
@@ -381,6 +430,30 @@ define(['core/core'],function(core){
 
         var namedItem = sheet.tryFindItemByName('foo');
         equal(namedItem.valueSource.Definition(), 'bar');
+    });
+
+    test("dependencies between cells are restored correctly", function(){
+       var persisted = {
+            format:1,
+            data:{
+                items:[
+                    {
+                        name:'a',
+                        definition:'="b"',
+                        display:{x:10,y:20}
+                    },
+                    {
+                        name:'b',
+                        definition:'42',
+                        display:{x:10,y:100}
+                    }
+                ]
+            }
+        };
+        var sheet = new core.Sheet(persisted);
+
+        equal(sheet.tryFindItemByName('a').valueSource.Value(), 42, "dependent cell did not have correct value");
+        equal(sheet.tryFindItemByName('b').valueSource.Value(), 42, "depended on cell did not have correct value");
     });
 
 });
