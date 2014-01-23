@@ -58,7 +58,7 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
                 if(oldName){
                     notifyDependentsOfValueChange({name:oldName, value:undefined});
                 }
-                notifyDependentsOfValueChange({name:newName, value:nameRecord.item.valueSource.valueFoo});
+                notifyDependentsOfValueChange({name:newName, value:nameRecord.item.valueSource.value});
             }
 
             self.tryGetName = function(item){
@@ -85,7 +85,7 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
                     if(_.isUndefined(item)){
                         return undefined;
                     }
-                    return item.valueSource.valueFoo;
+                    return item.valueSource.value;
             }
 
             var notifyDependentsOfValueChange = function(nameValuePair){
@@ -142,7 +142,7 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
                 return [];
             }
     
-            Object.defineProperty(this, "valueFoo", {
+            Object.defineProperty(this, "value", {
                 get:function(){return currentValue},
                 set:function(newValue){
                     currentValue = newValue;
@@ -176,11 +176,11 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
                     dependencies = newDependencies;
                     self.trigger('dependenciesChanged');
                 }
-    			self.valueFoo = evaluate(definition);
+    			self.value = evaluate(definition);
     		}
 
             self.dependencyValueChanged = function(){
-                self.valueFoo = evaluate(self.Definition());   
+                self.value = evaluate(self.Definition());   
             };
     	}
     

@@ -8,7 +8,7 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
     		
     		//public properties
     		self.position      = ko.observable(sheetEntity.position);
-    		self.value         = ko.observable(valueObject.valueFoo);
+    		self.value         = ko.observable(valueObject.value);
     		self.definition    = ko.observable(valueObject.Definition());
     		self.requestedName = ko.observable(existingNameOnSheet);
             self.name          = ko.observable(existingNameOnSheet);

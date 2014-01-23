@@ -9,14 +9,14 @@ define(['core/core', 'ui/ui'],function(core, ui){
     test("SingleValueViewModel updates its value when its SingleValueSource changes its value", function() {
         //Arrange
         var svs = new core.SingleValueSource();
-    	svs.valueFoo = 1;
+    	svs.value = 1;
     	var vm = new ui.SingleValueViewModel({valueSource:svs}, getSheetForTests());
     	var viewModelRaisedEvent = false;
     	vm.value.subscribe(function(){viewModelRaisedEvent = true});
     
     
     	//Act
-    	svs.valueFoo = 2;
+    	svs.value = 2;
     
     	//Assert
     	ok(viewModelRaisedEvent);

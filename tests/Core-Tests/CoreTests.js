@@ -8,24 +8,24 @@ define(['core/core'],function(core){
     
     test("SingleValueSource has default value of null", function(){
     	var svs = new core.SingleValueSource();
-    	strictEqual(svs.valueFoo, null);
+    	strictEqual(svs.value, null);
     })
     
     test("Can set and retrieve value on a SingleValueSource", function(){
     	var svs = new core.SingleValueSource();
-    	svs.valueFoo = 4;
-    	strictEqual(svs.valueFoo, 4);
+    	svs.value = 4;
+    	strictEqual(svs.value, 4);
     })
     
     test("Setting the value of one SingleValueSource does not change the value of others", function(){
     	var a = new core.SingleValueSource();
     	var b = new core.SingleValueSource();
     
-    	a.valueFoo = 3;
-    	b.valueFoo = 5;
+    	a.value = 3;
+    	b.value = 5;
     
-    	equal(a.valueFoo, 3);
-    	equal(b.valueFoo, 5);
+    	equal(a.value, 3);
+    	equal(b.value, 5);
     })
     
     test("setting a value on a SingleValueSource raises value change event with the new value", function(){
@@ -37,7 +37,7 @@ define(['core/core'],function(core){
     		valueFromEvent = newValue;
     	});
     
-    	svs.valueFoo = 4;
+    	svs.value = 4;
     
     	ok(eventFired);
     	strictEqual(valueFromEvent, 4);
@@ -92,7 +92,7 @@ define(['core/core'],function(core){
     	var svs = new core.SingleValueSource(evaluator);
     
     	svs.Definition(2);
-    	equal(3, svs.valueFoo);
+    	equal(3, svs.value);
     })
     
     test("setting the definition on a SingleValueSource causes it to query its evaluator for expression dependencies", function() {
@@ -452,8 +452,8 @@ test("When items name is changed, Sheet calls dependencyValueChanged on any item
         };
         var sheet = new core.Sheet(persisted);
 
-        equal(sheet.tryFindItemByName('a').valueSource.valueFoo, 42, "dependent cell did not have correct value");
-        equal(sheet.tryFindItemByName('b').valueSource.valueFoo, 42, "depended on cell did not have correct value");
+        equal(sheet.tryFindItemByName('a').valueSource.value, 42, "dependent cell did not have correct value");
+        equal(sheet.tryFindItemByName('b').valueSource.value, 42, "depended on cell did not have correct value");
     });
 
 });
