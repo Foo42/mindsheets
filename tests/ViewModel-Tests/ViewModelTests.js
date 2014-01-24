@@ -26,14 +26,14 @@ define(['core/core', 'ui/ui'],function(core, ui){
     test("Changing the definition on a SingleValueViewModel updates the definition on its SingleValueSource", function() {
     	//Arrange
     	var svs = new core.SingleValueSource();
-    	svs.definitionFoo = "0";
+    	svs.definition = "0";
     	var vm = new ui.SingleValueViewModel({valueSource:svs}, getSheetForTests());
     
     	//Act
     	vm.definition("1");
     
     	//Assert
-    	equal(svs.definitionFoo, "1");
+    	equal(svs.definition, "1");
     })
     
     test("Setting requestedName on a SingleValueViewModel causes it to call trySetName on the sheet it was constructed with, ",function(){
@@ -101,7 +101,7 @@ define(['core/core', 'ui/ui'],function(core, ui){
         //Arrange
         var sheetModel = new core.Sheet();
         var itemToAdd = new core.SingleValueSource();
-        itemToAdd.definitionFoo = 'bar';
+        itemToAdd.definition = 'bar';
         var sheetElement = {valueSource:itemToAdd};
         sheetModel.addItem(sheetElement);
         sheetModel.trySetName(sheetElement, 'foo');
