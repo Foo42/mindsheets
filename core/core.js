@@ -106,7 +106,7 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
 
                     var evaluator = new SimpleEvaluator.SimpleEvaluator(tryGetValueOfItemWithName);
                     var svs = new module.SingleValueSource(evaluator);
-                    svs.Definition(itemToAdd.definition);
+                    svs.definitionFoo = itemToAdd.definition;
                     var item = new module.SheetElement(svs, {x:itemToAdd.display.x, y:itemToAdd.display.y});                    
                 
                     self.addItem(item);
@@ -142,6 +142,7 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
                 return [];
             }
     
+            //Note: it is questionable whether we should allow direct setting of value
             Object.defineProperty(this, "value", {
                 get:function(){return currentValue},
                 set:function(newValue){
@@ -163,6 +164,13 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
                 return dependencies;
             }
 
+            Object.defineProperty(this, "definitionFoo", {
+                get:function(){return self.Definition()},
+                set:function(newDefinition){
+                    self.Definition(newDefinition);
+                }
+            });
+
     		self.Definition = function(newDefinition){
     			if(typeof(newDefinition) === 'undefined'){
     				return definition;
@@ -180,7 +188,7 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
     		}
 
             self.dependencyValueChanged = function(){
-                self.value = evaluate(self.Definition());   
+                self.value = evaluate(self.definitionFoo);   
             };
     	}
     

@@ -9,7 +9,7 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
     		//public properties
     		self.position      = ko.observable(sheetEntity.position);
     		self.value         = ko.observable(valueObject.value);
-    		self.definition    = ko.observable(valueObject.Definition());
+    		self.definition    = ko.observable(valueObject.definitionFoo);
     		self.requestedName = ko.observable(existingNameOnSheet);
             self.name          = ko.observable(existingNameOnSheet);
     		self.isEditing     = ko.observable(true);
@@ -32,7 +32,7 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
     		
     		// Update the model when our observables change
     		self.definition.subscribe(function(newDefinitionValue){
-    			valueObject.Definition(newDefinitionValue);
+    			valueObject.definitionFoo = newDefinitionValue;
     		});
     
     		self.requestedName.subscribe(function(name){

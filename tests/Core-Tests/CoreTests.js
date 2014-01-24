@@ -53,7 +53,7 @@ define(['core/core'],function(core){
     		valueFromEvent = newDefinition;
     	});
     
-    	svs.Definition(5);
+    	svs.definitionFoo = 5;
     
     	ok(eventFired);
     	equal(valueFromEvent, 5);
@@ -64,7 +64,7 @@ define(['core/core'],function(core){
     	var evaluator = {evaluate:function(){evaluatorWasCalled=true;}};
     	var svs = new core.SingleValueSource(evaluator);
     
-    	svs.Definition(3);
+    	svs.definitionFoo = 3;
     
     	ok(evaluatorWasCalled);
     })
@@ -81,7 +81,7 @@ define(['core/core'],function(core){
     		eventWasFired = true;
     	});
     
-    	svs.Definition(2);
+    	svs.definitionFoo = 2;
     
     	ok(eventWasFired);
     	equal(valueFromEvent, 3);
@@ -91,7 +91,7 @@ define(['core/core'],function(core){
     	var evaluator = {evaluate:function(expression){return expression + 1;}};
     	var svs = new core.SingleValueSource(evaluator);
     
-    	svs.Definition(2);
+    	svs.definitionFoo = 2;
     	equal(3, svs.value);
     })
     
@@ -102,7 +102,7 @@ define(['core/core'],function(core){
        var svs = new core.SingleValueSource(evaluator);
        
        //Act
-       svs.Definition('=5+1');
+       svs.definitionFoo = '=5+1';
        
        //Assert
        ok(dependenciesWereQueried, "single value source did not query for dependencies on evaluator");
@@ -115,7 +115,7 @@ define(['core/core'],function(core){
         var svs = new core.SingleValueSource(evaluator);
        
         //Act
-        svs.Definition('=something');
+        svs.definitionFoo = '=something';
         
         //Assert
         equal(svs.getDependencies(), dependencies);
@@ -129,11 +129,11 @@ define(['core/core'],function(core){
             getDependencies:function(expression){return expression.length == 0 ? [] : ['stuff']}};
         
         var svs = new core.SingleValueSource(evaluator);
-        svs.Definition("");
+        svs.definitionFoo = "";
         svs.bind("dependenciesChanged", function(){eventWasFired=true;});
        
         //Act
-        svs.Definition('=something');
+        svs.definitionFoo = '=something';
         
         //Assert
         ok(eventWasFired,"event not fired");
@@ -147,11 +147,11 @@ define(['core/core'],function(core){
             getDependencies:function(expression){return ['stuff']}};
         
         var svs = new core.SingleValueSource(evaluator);
-        svs.Definition("");
+        svs.definitionFoo = "";
         svs.bind("dependenciesChanged", function(){eventWasFired=true;});
        
         //Act
-        svs.Definition('=something');
+        svs.definitionFoo = '=something';
         
         //Assert
         ok(!eventWasFired,"event fired incorrectly");
@@ -162,7 +162,7 @@ define(['core/core'],function(core){
        var reevaluated = false;
        var evaluator = {evaluate:function(){reevaluated = true;return 0}, getDependencies:function(){return ['a']}};
        var svs = new core.SingleValueSource(evaluator);
-       svs.Definition('=1+1');
+       svs.definitionFoo = '=1+1';
        reevaluated = false; //Just to be sure we are testing for it being called as a result of the 'Act'
        
        //Act
@@ -318,7 +318,7 @@ define(['core/core'],function(core){
         sheet.trySetName(dependency, "a");        
         sheet.addItem(dependency);
 
-        dependencyValueSource.Definition(2);
+        dependencyValueSource.definitionFoo = 2;
 
         ok(dependencyValueChangedWasCalled);
     });
@@ -337,7 +337,7 @@ define(['core/core'],function(core){
 
         var dependencyValueSource = new core.SingleValueSource();
         var dependency = new core.SheetElement(dependencyValueSource, {x:0,y:0});
-        dependencyValueSource.Definition(2);        
+        dependencyValueSource.definitionFoo = 2;        
         sheet.addItem(dependency);
         
         //Act
@@ -359,7 +359,7 @@ test("When items name is changed, Sheet calls dependencyValueChanged on any item
 
         var dependencyValueSource = new core.SingleValueSource();
         var dependency = new core.SheetElement(dependencyValueSource, {x:0,y:0});
-        dependencyValueSource.Definition(2);        
+        dependencyValueSource.definitionFoo = 2;        
         sheet.addItem(dependency);
         sheet.trySetName(dependency, "dependended on");        
         dependencyValueChangedWasCalled = false; //we are only interested in calls during the act phase
@@ -410,7 +410,7 @@ test("When items name is changed, Sheet calls dependencyValueChanged on any item
         }));
 
         equal(numberOfItems, 1, "wrong number of items in sheet");
-        equal(sheetItem.valueSource.Definition(), persisted.data.items[0].definition);
+        equal(sheetItem.valueSource.definitionFoo, persisted.data.items[0].definition);
     });
 
     test("constructing sheet with persisted js for a named single value source initialises sheet correctly", function(){
@@ -429,7 +429,7 @@ test("When items name is changed, Sheet calls dependencyValueChanged on any item
         var sheet = new core.Sheet(persisted);
 
         var namedItem = sheet.tryFindItemByName('foo');
-        equal(namedItem.valueSource.Definition(), 'bar');
+        equal(namedItem.valueSource.definitionFoo, 'bar');
     });
 
     test("dependencies between cells are restored correctly", function(){
