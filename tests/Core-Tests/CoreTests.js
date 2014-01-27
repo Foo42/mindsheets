@@ -456,4 +456,6 @@ test("When items name is changed, Sheet calls dependencyValueChanged on any item
         equal(sheet.tryFindItemByName('b').valueSource.value, 42, "depended on cell did not have correct value");
     });
 
+    
+
 });
