@@ -95,7 +95,7 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
     
     		self.clicked = function(data, event){
     			var vmForClickTarget = ko.dataFor(event.target);
-    			if(vmForClickTarget.sheet != self)
+    			if(vmForClickTarget.sheet() != self)
     				return; //We are only interested in clicks directly on sheet, not events bubbling up
     
     			var pos = {x:event.pageX + "px", y:event.pageY + "px"};
@@ -132,7 +132,7 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
     	return function(persistedSheetData){
     		var self = this;
     
-    		self.sheet = new SheetVM(new core.Sheet(persistedSheetData));
+    		self.sheet = ko.observable(new SheetVM(new core.Sheet(persistedSheetData)));
     	};
     })();
     
