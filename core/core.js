@@ -69,6 +69,23 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
                 items.forEach(func);
             }
 
+            self.extractMemento = function(){
+                var persistedItems = items.map(function(item){
+                    return {
+                        name:self.tryGetName(item),
+                        definition:item.valueSource.definition,
+                        display:item.position
+                    };
+                });
+
+                return {
+                    format:1,
+                    data:{
+                        items:persistedItems
+                    }
+                };
+            }
+
 
             //Private Methods
             var tryFindNameRecordOfItem = function(item){

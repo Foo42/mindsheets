@@ -221,6 +221,12 @@ define(['core/core'],function(core){
         ok(itemB.wasTouched);
     });
 
+    var countItemsOnSheet = function(sheet){
+        var numberOfSheetItems = 0;
+        sheet.forEachItem(function(item){numberOfSheetItems++;});
+        return numberOfSheetItems;
+    }
+
     test("Removing item from the sheet, causes it to be removed and raise an itemRemoved event with the item which was removed", function(){
         //Arrange
         var itemWhichWasRemoved;
@@ -240,8 +246,7 @@ define(['core/core'],function(core){
         sheet.removeItem(itemB);        
         
         //Assert
-        var numberOfSheetItems = 0;
-        sheet.forEachItem(function(item){numberOfSheetItems++;});
+        var numberOfSheetItems = countItemsOnSheet(sheet);
         equal(numberOfSheetItems, 1);
         equal(itemWhichWasRemoved, itemB);
     });
@@ -432,6 +437,43 @@ test("When items name is changed, Sheet calls dependencyValueChanged on any item
         equal(namedItem.valueSource.definition, 'bar');
     });
 
+    test("constructing sheet with persisted js for a unnamed single value source initialises sheet correctly", function(){
+       var persisted = {
+            format:1,
+            data:{
+                items:[
+                    {
+                        definition:'bar',
+                        display:{x:10,y:20}
+                    }
+                ]
+            }
+        };
+        var sheet = new core.Sheet(persisted);
+
+        var sheetItem;
+        sheet.forEachItem(function(item){sheetItem = item});
+        equal(sheetItem.valueSource.definition, 'bar');
+    });
+
+    test("constructing sheet with persisted js for a named single value source without a definition initialises sheet correctly", function(){
+       var persisted = {
+            format:1,
+            data:{
+                items:[
+                    {
+                        name:'foo',
+                        display:{x:10,y:20}
+                    }
+                ]
+            }
+        };
+        var sheet = new core.Sheet(persisted);
+
+        var namedItem = sheet.tryFindItemByName('foo');
+        ok(namedItem);
+    });
+
     test("dependencies between cells are restored correctly", function(){
        var persisted = {
             format:1,
@@ -456,6 +498,48 @@ test("When items name is changed, Sheet calls dependencyValueChanged on any item
         equal(sheet.tryFindItemByName('b').valueSource.value, 42, "depended on cell did not have correct value");
     });
 
-    
+    test("when I extract a memento from a sheet, it has a format of 1",function(){
+        var sheet = new core.Sheet();
+        var persisted = sheet.extractMemento();
+        equal(persisted.format, 1);
+    });
+
+    test("when I extract a memento from a sheet with a single named cell, I get js with a single item in data with the cells name, definition, and display position", function(){
+        var sheet = new core.Sheet();
+        var itemToAdd = new core.SheetElement(new core.SingleValueSource(), {x:10,y:20});    
+        itemToAdd.valueSource.definition = "hello world";
+        sheet.addItem(itemToAdd);
+        sheet.trySetName(itemToAdd, "Foo");
+
+        var persisted = sheet.extractMemento();
+
+        equal(persisted.data.items.length, 1);        
+        var persistedItem = persisted.data.items[0];
+        equal(persistedItem.definition, "hello world");
+        equal(persistedItem.name, "Foo");
+        equal(persistedItem.display.x, 10);
+        equal(persistedItem.display.y, 20);
+    });
+
+    test("When I roundtrip a sheet through persistance and back, it has the same items after restoration as before",function(){
+        var sheet = new core.Sheet();
+
+        var a = new core.SheetElement(new core.SingleValueSource(), {x:0,y:0});
+        a.valueSource.definition = "hello";
+        sheet.addItem(a);
+        sheet.trySetName(a, "foo");
+
+        var b = new core.SheetElement(new core.SingleValueSource(), {x:10,y:20});
+        b.valueSource.definition = "world";
+        sheet.addItem(b);
+        sheet.trySetName(b, "bar");
+
+
+        var persisted = sheet.extractMemento();
+
+        var recreatedSheet = new core.Sheet(persisted);
+        equal(countItemsOnSheet(recreatedSheet), 2);
+
+    });
 
 });

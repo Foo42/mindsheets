@@ -7,6 +7,9 @@ require.config({
 	'packages': [{ 'name': 'lodash', 'location': 'lib/lodash', 'main': 'lodash' }]
 });
 
+var rootVM; //to allow access via dev tools console for probing
+
+
 require(['jquery','lib/knockout/knockout-2.2.0','ui/ui'],
 function($,ko,viewModel) {
     $(document).ready(function(){
@@ -24,6 +27,7 @@ function($,ko,viewModel) {
                 ]
             }
         };
-		ko.applyBindings(new viewModel.RootViewModel(initialState));	
+        rootVM = new viewModel.RootViewModel(initialState);
+		ko.applyBindings(rootVM);	
 	});
 });
