@@ -69,20 +69,17 @@ define([],function(){
                 return pieces;
             };
 
-            var stripOuterBrackets = function(s){
-                if(s.length <= 0){
-                    return s;
+            var stripOuterBrackets = function(expression){
+                if(expression.length <= 0){
+                    return expression;
                 }
 
-                if(s[0] === "("){
-                    s = s.substr(1);    
-                }
-                
-                if(s[s.length - 1] === ")"){
-                    s = s.substr(0,s.length -1);
+                if(expression[0] === "(" && expression[expression.length - 1] === ")"){
+                    expression = expression.substr(1);   
+                    expression = expression.substr(0,expression.length -1);
                 }
 
-                return s;
+                return expression;
             }
 
             var stripQuotes = function(s){
