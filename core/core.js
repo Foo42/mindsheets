@@ -70,7 +70,10 @@ define(['lib/microevent/microevent', 'expressionEvaluators/simpleEvaluator', 'lo
             }
 
             self.extractMemento = function(){
-                var persistedItems = items.map(function(item){
+                var isNotEmptyItem = function(item){
+                    return item.valueSource.defintion || self.tryGetName(item)
+                };
+                var persistedItems = items.filter(isNotEmptyItem).map(function(item){
                     return {
                         name:self.tryGetName(item),
                         definition:item.valueSource.definition,

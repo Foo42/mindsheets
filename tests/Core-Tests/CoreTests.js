@@ -521,6 +521,21 @@ test("When items name is changed, Sheet calls dependencyValueChanged on any item
         equal(persistedItem.display.y, 20);
     });
 
+    test("when I extract a memento from a sheet with elements which have neither definition nor name, these are not present in the memento",function(){
+        var sheet = new core.Sheet();
+        var itemToAdd = new core.SheetElement(new core.SingleValueSource(), {x:10,y:20});    
+        itemToAdd.valueSource.definition = "hello world";
+        sheet.addItem(itemToAdd);
+        sheet.trySetName(itemToAdd, "Foo");
+
+        var otherItemToAdd = new core.SheetElement(new core.SingleValueSource(), {x:30,y:40});    
+        sheet.addItem(otherItemToAdd);
+
+        var persisted = sheet.extractMemento();
+
+        equal(persisted.data.items.length, 1);     
+    });
+
     test("When I roundtrip a sheet through persistance and back, it has the same items after restoration as before",function(){
         var sheet = new core.Sheet();
 
