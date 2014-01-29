@@ -184,6 +184,21 @@ define(['core/core', 'ui/ui'],function(core, ui){
         sheetVM.items()[0].startEditing();
         equal(sheetVM.items().length,1);
     });
+
+    module("loading and saving");
+
+    test("Sheet.save returns json stringified version of memento extracted from sheet", function(){
+        var sheetModel = new core.Sheet();
+        var stubExtractMemento = function(){return {random:"stuff"}}
+        sheetModel.extractMemento = stubExtractMemento;
+        var sheetVM = new ui.SheetVM(sheetModel);    
+        var itemToAdd = new core.SingleValueSource();
+        sheetModel.addItem({valueSource:itemToAdd});
+
+        var persistedJSON = sheetVM.save();
+
+        equal(persistedJSON, JSON.stringify(stubExtractMemento()));
+    });
 });
 
 

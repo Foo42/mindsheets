@@ -7,10 +7,11 @@
         <script data-main="browser-main.js" src="lib/require/require.js"></script>
 	</head>
 	<body>
+		<p class="loading-message">Loading...</p>
         <p data-bind="visible:sheet().items().length == 0">Click somewhere...</p>
     
 		<script id="sheetItemTemplate" type="text/html">
-			<div class="sheetItem" style="position:absolute;" data-bind="style: {left:position().x, top:position().y}, css:{beingEdited:isEditing()}, click:startEditing">				
+			<div class="sheetItem" data-bind="style: {left:position().x, top:position().y}, css:{beingEdited:isEditing()}, click:startEditing">				
 				<input placeholder='name' data-bind='visible:isEditing, value:requestedName'>
 				<span data-bind="visible:!isEditing(), text: name() ? name() + ':' : '' "></span>
 
@@ -22,8 +23,10 @@
             
 		</script>
 
-
-		<div id="sheetArea" style="height:600px; width:100%" data-bind="template:{name:'sheetItemTemplate', foreach:sheet().items}, click:sheet().clicked">			
+		<div id="control-area">
+			<input type='button' data-bind="click:save" value='Save'></button>
+		</div>
+		<div id="sheetArea" style="width:100%" data-bind="template:{name:'sheetItemTemplate', foreach:sheet().items}, click:sheet().clicked">			
 		</div>
 	
 	

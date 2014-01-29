@@ -1,5 +1,17 @@
+#control-area{
+	padding:10px;
+}
+
+#sheetArea{	
+	border:1px solid black;
+	position: relative;
+	height:100%;
+}
+
 .sheetItem
 {
+	position: absolute;
+	float: left;
 	padding:5px;
 
 	border-style:solid;
@@ -14,4 +26,8 @@
 .beingEdited
 {
 	border-color: #99CCFF;
+}
+
+.ready-for-interaction .loading-message{
+	display: none;
 }

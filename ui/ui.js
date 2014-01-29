@@ -98,9 +98,13 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
     			if(vmForClickTarget.sheet() != self)
     				return; //We are only interested in clicks directly on sheet, not events bubbling up
     
-    			var pos = {x:event.pageX + "px", y:event.pageY + "px"};
+    			var pos = {x:event.offsetX + "px", y:event.offsetY + "px"};
     			self.addItemAtPosition(pos);
     		}
+
+            self.save = function(){
+                return JSON.stringify(sheet.extractMemento());
+            }
     
     
     		//private methods
@@ -133,6 +137,9 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
     		var self = this;
     
     		self.sheet = ko.observable(new SheetVM(new core.Sheet(persistedSheetData)));
+            self.save = function(){
+                alert(self.sheet().save());
+            }
     	};
     })();
     
