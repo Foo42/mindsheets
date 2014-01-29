@@ -140,6 +140,19 @@ define(['lib/knockout/knockout-2.2.0', 'lib/microevent/microevent', 'core/core',
             self.save = function(){
                 alert(self.sheet().save());
             }
+            
+
+            self.loadingJSON = ko.observable();
+            
+            self.loadButtonEnabled = ko.computed(function(){
+                return self.loadingJSON() && self.loadingJSON().length;
+            },self);
+
+            self.load = function(){
+                var memento = JSON.parse(self.loadingJSON());
+                self.sheet(new SheetVM(new core.Sheet(memento)));
+                self.loadingJSON("");
+            }
     	};
     })();
     

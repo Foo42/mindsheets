@@ -2,6 +2,10 @@
 	padding:10px;
 }
 
+#loadingJSON{
+	width: 500px;
+}
+
 #sheetArea{	
 	border:1px solid black;
 	position: relative;
