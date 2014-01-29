@@ -123,4 +123,22 @@ define(['expressionEvaluators/simpleEvaluator'],function(SE){
 
         equal(value, 3);
     });
+
+    test("Given an expression with the first statement out of parenthesis and the second one within the expression should evaluate", function(){
+        var expression = "=5+(5-1)",
+            expectedResult = 9;
+
+        var evaluator = new SE.SimpleEvaluator();
+
+        strictEqual(evaluator.evaluate(expression), expectedResult);  
+    });
+
+    test("Close of parenthesis do not terminate expression evaluation", function(){
+        var expression = "=(5)-1",
+            expectedResult = 4;
+
+        var evaluator = new SE.SimpleEvaluator();
+
+        strictEqual(evaluator.evaluate(expression), expectedResult);  
+    });
 });
