@@ -141,4 +141,13 @@ define(['expressionEvaluators/simpleEvaluator'],function(SE){
 
         strictEqual(evaluator.evaluate(expression), expectedResult);  
     });
+
+    test("Expressions beginning and ending with parenthesis are not confused with expressions wrapped in parenthesis", function(){
+        var expression = "=(5-1)*(1+2)",
+            expectedResult = 12;
+
+        var evaluator = new SE.SimpleEvaluator();
+
+        strictEqual(evaluator.evaluate(expression), expectedResult);  
+    });
 });

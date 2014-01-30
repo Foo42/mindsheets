@@ -74,6 +74,27 @@ define([],function(){
                     return expression;
                 }
 
+                if(expression[0] !== "("){
+                    return expression;
+                }
+
+                var parenthesisDepth = 1;
+                var position = 1; //we already know the first char is a (
+                for(; position < expression.length; position++){
+                    if(parenthesisDepth === 0){
+                        return expression; //balancing parenthesis found before end of expression
+                    }    
+
+                    if(expression[position] == '('){
+                        parenthesisDepth++;
+                        continue;
+                    }
+                    if(expression[position] == ')'){
+                        parenthesisDepth--;
+                        continue;
+                    }
+                }
+
                 if(expression[0] === "(" && expression[expression.length - 1] === ")"){
                     expression = expression.substr(1);   
                     expression = expression.substr(0,expression.length -1);
