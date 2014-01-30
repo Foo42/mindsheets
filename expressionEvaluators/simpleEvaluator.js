@@ -3,7 +3,33 @@ define([],function(){
     
     module.SimpleEvaluator = (function(){
 
-    	var shouldEvaluateAsExpression = function(input){
+    	var StringIterator = function(s){
+            var self = this;
+            var position = 0;
+            var length = s.length;
+
+            this.moveNext = function(){
+                position++;
+                if(self.isPastEnd()){
+                    return false;
+                }
+                return true;
+            }
+
+            this.current = function(){
+                return self.isPastEnd() ? undefined : s[position];
+            }
+
+            this.isPastEnd = function(){
+                return position >= length;
+            }
+
+            this.position = function(){
+                return position;
+            }
+        }
+
+        var shouldEvaluateAsExpression = function(input){
     		return typeof(input) === 'string' && input[0] === '=';
     	}
 
@@ -28,37 +54,44 @@ define([],function(){
     			return total;			
     		}
 
-            var findNextOperator = function(s, operator){
+            var advanceToNextOccuranceOf = function(iterator, operator){
                 var inQuotedString = false;
                 var subExpressionDepth = 0;
-                for(var i = 0; i< s.length;i++){
-                    var c = s[i];
+
+                while(! iterator.isPastEnd()){
+                    var c = iterator.current();
+
                     if(c === '"'){
                         inQuotedString = !inQuotedString
                     }
                     if(inQuotedString){
+                        iterator.moveNext();
                         continue;
                     }
 
                     if(c === '('){
                         subExpressionDepth++;
+                        iterator.moveNext();
                         continue;
                     }
                     if(c ===')'){
                         subExpressionDepth--;
+                        iterator.moveNext();
                         continue;
                     }
 
                     if(subExpressionDepth !== 0){
+                        iterator.moveNext();
                         continue;
                     }
 
                     if(c === operator){
-                        return i;
+                        return iterator;
                     }
-                }
 
-                return -1;
+                    iterator.moveNext();
+                }
+                return iterator;
             }
 
             var splitAt = function(s, i, shouldTrim){
@@ -161,9 +194,10 @@ define([],function(){
     			//Find first operator which appears
     			for (var i = 0; i < operators.length; i++) {
     				var operator = operators[i];
-                    var operatorLocation = findNextOperator(expression, operator.op);
-                    if(operatorLocation > -1){
-                        var pieces = splitAt(expression, operatorLocation);    
+                    var expressionIterator = new StringIterator(expression);
+                    advanceToNextOccuranceOf(expressionIterator, operator.op);
+                    if(!expressionIterator.isPastEnd()){
+                        var pieces = splitAt(expression, expressionIterator.position());    
                         return operator.func(pieces);
                     }                    
     			};
