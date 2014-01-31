@@ -54,44 +54,39 @@ define([],function(){
     			return total;			
     		}
 
-            var advanceToNextOccuranceOf = function(iterator, operator){
-                var inQuotedString = false;
-                var subExpressionDepth = 0;
+            var advanceToMatchingQuoteMark = function(iterator){
+                var quoteChar = '"';
+                if(iterator.current() !== quoteChar){
+                    throw "iterator not currently on quote";
+                }
 
-                while(! iterator.isPastEnd()){
-                    var c = iterator.current();
-
-                    if(c === '"'){
-                        inQuotedString = !inQuotedString
+                while(iterator.moveNext()){
+                    if(iterator.current() == quoteChar){
+                        break;
                     }
-                    if(inQuotedString){
-                        iterator.moveNext();
-                        continue;
-                    }
-
-                    if(c === '('){
-                        subExpressionDepth++;
-                        iterator.moveNext();
-                        continue;
-                    }
-                    if(c ===')'){
-                        subExpressionDepth--;
-                        iterator.moveNext();
-                        continue;
-                    }
-
-                    if(subExpressionDepth !== 0){
-                        iterator.moveNext();
-                        continue;
-                    }
-
-                    if(c === operator){
-                        return iterator;
-                    }
-
-                    iterator.moveNext();
                 }
                 return iterator;
+            }
+
+            var advanceToFirstOccurenceOfOperator = function(it, operator){
+                while(!it.isPastEnd()){
+                    if(it.current() == '"'){
+                        advanceToMatchingQuoteMark(it);
+                        it.moveNext();
+                    }
+
+                    if(it.current() == '('){
+                        advanceToMatchingParenthesis(it);
+                        it.moveNext();
+                    }
+
+                    if(it.current() == operator){
+                        break;
+                    }
+
+                    it.moveNext();
+                }
+                return it;
             }
 
             var splitAt = function(s, i, shouldTrim){
@@ -102,6 +97,31 @@ define([],function(){
                 return pieces;
             };
 
+
+            var advanceToMatchingParenthesis = function(it){
+                if(it.current() !== "("){
+                    throw "not on an opening parenthesis"; //todo, lookup correct error style
+                }
+
+                var parenthesisDepth = 1; //we are already on one
+                while(it.moveNext()){
+                    if(it.current() == '"'){
+                        advanceToMatchingQuoteMark(it);
+                        it.moveNext();
+                    }
+
+                    if(it.current() === "("){
+                        parenthesisDepth++;
+                    }else if(it.current() === ")"){
+                        parenthesisDepth--;
+                    }
+                    if(parenthesisDepth === 0){
+                        break;
+                    }
+                }
+                return it;
+            }
+
             var stripOuterBrackets = function(expression){
                 if(expression.length <= 0){
                     return expression;
@@ -111,28 +131,12 @@ define([],function(){
                     return expression;
                 }
 
-                var parenthesisDepth = 1;
-                var position = 1; //we already know the first char is a (
-                for(; position < expression.length; position++){
-                    if(parenthesisDepth === 0){
-                        return expression; //balancing parenthesis found before end of expression
-                    }    
-
-                    if(expression[position] == '('){
-                        parenthesisDepth++;
-                        continue;
-                    }
-                    if(expression[position] == ')'){
-                        parenthesisDepth--;
-                        continue;
-                    }
-                }
-
-                if(expression[0] === "(" && expression[expression.length - 1] === ")"){
+                var it = new StringIterator(expression);
+                advanceToMatchingParenthesis(it);
+                if(it.position() == (expression.length -1)){
                     expression = expression.substr(1);   
                     expression = expression.substr(0,expression.length -1);
                 }
-
                 return expression;
             }
 
@@ -142,14 +146,15 @@ define([],function(){
                 if(s.length <= 0){
                     return s;
                 }
-
                 
-                if(s[0] === quoteCharacter){
-                    s = s.substr(1);    
+                if(s[0] != quoteCharacter){
+                    return s;
                 }
-                
-                if(s[s.length - 1] === quoteCharacter){
-                    s = s.substr(0,s.length -1);
+
+                var it = new StringIterator(s);
+                advanceToMatchingQuoteMark(it);
+                if(it.position() == (s.length -1) ){
+                    s = s.substr(1,s.length -2);
                 }
 
                 return s;
@@ -195,7 +200,7 @@ define([],function(){
     			for (var i = 0; i < operators.length; i++) {
     				var operator = operators[i];
                     var expressionIterator = new StringIterator(expression);
-                    advanceToNextOccuranceOf(expressionIterator, operator.op);
+                    advanceToFirstOccurenceOfOperator(expressionIterator, operator.op);
                     if(!expressionIterator.isPastEnd()){
                         var pieces = splitAt(expression, expressionIterator.position());    
                         return operator.func(pieces);
